@@ -1,0 +1,10 @@
+{
+        "launch_in_dev": [
+                "Chrome"
+        ],
+        "src_files": [
+                "test/mock_test.js",
+                "*.js",
+                "test/renderer_test.js"
+        ]
+}
