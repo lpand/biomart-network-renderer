@@ -1,4 +1,4 @@
-;(function () {
+;(function (_) {
 
 "use strict"
 
@@ -7,25 +7,41 @@ var nt = biomart.renderer.results.network = Object.create(biomart.renderer.resul
 nt._nodes = []
 nt._edges = []
 
+// row: array of fields
 nt._makeNodes = function (row) {
-        return this.schema.nodes.map(function (node) {
-                var o = {}, attrIdxs = node.attrIdxs, idx
-                for (var i = 0, len = attrIdxs.length; i < len; ++i) {
-                        idx = attrIdxs[i]
-                        o[this.header[idx]] = row[idx]
-                }
-                return o
-        }, this)
+        var n1 = {}, n2 = {}
+
+        n1[this.node0.key] = row[0]
+        n2[this.node1.key] = row[1]
+
+        return [n1, n2]
 }
 
 nt._makeNE = function (row) {
         var nodePair = this._makeNodes(row)
 
-        Array.prototype.push.apply(this._nodes, nodePair)
-        this._edges.push({ source: nodePair[0], target: nodePair[1] })
+        // Before pushing check if nodes are already in the list
+        var checkListNode0 = _.pluck(this._nodes, this.node0.key)
+        var checkListNode1 = _.pluck(this._nodes, this.node1.key)
+        // Look printHeader()
+        var alreadyPresent0 = checkListNode0.indexOf(this.node0.value(nodePair[0]))
+        var alreadyPresent1 = checkListNode0.indexOf(this.node1.value(nodePair[1]))
+
+        // If one of them is not in the node list
+        if (alreadyPresent0 < 0) {
+                this._nodes.push(nodePair[0])
+        }
+        if (alreadyPresent1 < 0) {
+                this._nodes.push(nodePair[1])
+        }
+
+        // Because it could not be a repeated record
+        this._edges.push({ source: alreadyPresent0 < 0 ? nodePair[0] : this._nodes[alreadyPresent0], 
+                           target: alreadyPresent1 < 0 ? nodePair[1] : this._nodes[alreadyPresent1] })
 }
 
 // results.network.tagName ?
+// rows : array of arrays
 nt.parse = function (rows, writee) {
         for (var i = 0, rLen = rows.length; i < rLen; ++i)
                 this._makeNE(rows[i])
@@ -34,15 +50,14 @@ nt.parse = function (rows, writee) {
 // Intercept the header
 nt.printHeader = function(header, writee) {
         this.header = header
-        // {
-        //         nodes: [
-        //                 {
-        //                         // indexes of columns that belong to this node
-        //                         attrIdxs: []
-        //                 },
-        //                 ...
-        //         ]
-        // }
+        this.header.forEach(function (nodeId, idx) {
+                this['node'+idx] = {
+                        key: nodeId,
+                        value: function (nodeObj) {
+                                return nodeObj[nodeId]
+                        }
+                }
+        }, this)
 }
 
 
@@ -57,13 +72,35 @@ nt.clear = function () {
         this._nodes = []
         this._edges = []
         this.header = null
+        this.node0 = null
+        this.node1 = null
         // graph.remove()
 }
 
 nt.destroy = function () {
         // svg.remove()
         this.clear()
-        this.schema = null
 }
 
-}) ()
+// nt._makeNodes = function (row) {
+//         return this.schema.nodes.map(function (node) {
+//                 var o = {}, attrIdxs = node.attrIdxs, idx
+//                 for (var i = 0, len = attrIdxs.length; i < len; ++i) {
+//                         idx = attrIdxs[i]
+//                         o[this.header[idx]] = row[idx]
+//                 }
+//                 return o
+//         }, this)
+// }
+// {
+//         nodes: [
+//                 {
+//                         // indexes of columns that belong to this node
+//                         attrIdxs: []
+//                 },
+//                 ...
+//         ]
+// }
+
+
+}) (_) // underscore.js
