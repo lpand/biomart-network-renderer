@@ -3,8 +3,10 @@
                 "Chrome"
         ],
         "src_files": [
+                "lib/*.js",
+                "lib/biomart-network/dist/*.js",
                 "test/mock_test.js",
-                "*.js",
+                "src/**/*.js",
                 "test/renderer_test.js"
         ]
 }

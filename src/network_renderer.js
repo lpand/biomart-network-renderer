@@ -7,7 +7,7 @@
 //
 // Just for now ignore renderInvalid Option!
 // ============================================================================
-
+console.log('src')
 var nt = biomart.renderer.results.network = Object.create(biomart.renderer.results.plain)
 
 nt._nodes = []
