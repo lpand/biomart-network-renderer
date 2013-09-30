@@ -1,0 +1,3 @@
+[submodule "lib/biomart-network"]
+	path = lib/biomart-network
+	url = https://github.com/lpand/biomart-network.git

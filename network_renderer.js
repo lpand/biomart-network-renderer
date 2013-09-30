@@ -1,6 +1,12 @@
-;(function (_) {
+;(function (_, d3) {
 
-"use strict"
+"use strict";
+
+// ============================================================================
+// NOTE!!
+//
+// Just for now ignore renderInvalid Option!
+// ============================================================================
 
 var nt = biomart.renderer.results.network = Object.create(biomart.renderer.results.plain)
 
@@ -36,7 +42,7 @@ nt._makeNE = function (row) {
         }
 
         // Because it could not be a repeated record
-        this._edges.push({ source: alreadyPresent0 < 0 ? nodePair[0] : this._nodes[alreadyPresent0], 
+        this._edges.push({ source: alreadyPresent0 < 0 ? nodePair[0] : this._nodes[alreadyPresent0],
                            target: alreadyPresent1 < 0 ? nodePair[1] : this._nodes[alreadyPresent1] })
 }
 
@@ -103,4 +109,4 @@ nt.destroy = function () {
 // }
 
 
-}) (_) // underscore.js
+}) (_, d3) // underscore.js
