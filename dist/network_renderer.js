@@ -38,7 +38,7 @@
 
 }) ()
 
-;(function (_, d3) {
+;(function (d3) {
 
 "use strict";
 
@@ -47,7 +47,6 @@
 //
 // Just for now ignore renderInvalid Option!
 // ============================================================================
-
 var nt = biomart.renderer.results.network = Object.create(biomart.renderer.results.plain)
 
 nt._nodes = []
@@ -67,23 +66,36 @@ nt._makeNE = function (row) {
         var nodePair = this._makeNodes(row)
 
         // Before pushing check if nodes are already in the list
-        var checkListNode0 = _.pluck(this._nodes, this.node0.key)
-        var checkListNode1 = _.pluck(this._nodes, this.node1.key)
-        // Look printHeader()
-        var alreadyPresent0 = checkListNode0.indexOf(this.node0.value(nodePair[0]))
-        var alreadyPresent1 = checkListNode0.indexOf(this.node1.value(nodePair[1]))
+        var node0Value = this.node0.value(nodePair[0])
+        var node1Value = this.node1.value(nodePair[1])
+        var alreadyPresent0 = null
+        var alreadyPresent1 = null
+
+        this._nodes.some(function (node) {
+                if (this.node0.value(node) === node0Value) {
+                        alreadyPresent0 = node
+                        return true
+                }
+        }, this)
+
+        this._nodes.some(function (node) {
+                if (this.node1.value(node) === node1Value) {
+                        alreadyPresent1 = node
+                        return true
+                }
+        }, this)
 
         // If one of them is not in the node list
-        if (alreadyPresent0 < 0) {
+        if (!alreadyPresent0) {
                 this._nodes.push(nodePair[0])
         }
-        if (alreadyPresent1 < 0) {
+        if (!alreadyPresent1) {
                 this._nodes.push(nodePair[1])
         }
 
         // Because it could not be a repeated record
-        this._edges.push({ source: alreadyPresent0 < 0 ? nodePair[0] : this._nodes[alreadyPresent0],
-                           target: alreadyPresent1 < 0 ? nodePair[1] : this._nodes[alreadyPresent1] })
+        this._edges.push({ source: alreadyPresent0 || nodePair[0],
+                           target: alreadyPresent1 || nodePair[1] })
 }
 
 // results.network.tagName ?
@@ -136,8 +148,8 @@ nt.clear = function () {
         // Should I delete them?
         this._nodes = []
         this._edges = []
-        this.header = this.node0 = this.node1 = null
-        this._svg.remove()
+        // this.header = this.node0 = this.node1 = null
+        if (this._svg) this._svg.remove()
         this._svg = null
 }
 
@@ -167,4 +179,4 @@ nt.destroy = function () {
 // }
 
 
-}) (_, d3) // underscore.js
+})(d3); // underscore.js

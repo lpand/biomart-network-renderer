@@ -71,7 +71,7 @@ describe ('biomart.renderer.results.network', function () {
                 expect(nt._nodes).toEqual([
                         {'name': 'jack'},
                         {'age': '53'},
-                        {'age': '76'}                    
+                        {'age': '76'}
                 ])
 
                 expect(nt._edges).toEqual([
