@@ -7,7 +7,6 @@
 //
 // Just for now ignore renderInvalid Option!
 // ============================================================================
-console.log('src')
 var nt = biomart.renderer.results.network = Object.create(biomart.renderer.results.plain)
 
 nt._nodes = []
@@ -96,8 +95,8 @@ nt.clear = function () {
         // Should I delete them?
         this._nodes = []
         this._edges = []
-        this.header = this.node0 = this.node1 = null
-        this._svg.remove()
+        // this.header = this.node0 = this.node1 = null
+        if (this._svg) this._svg.remove()
         this._svg = null
 }
 
