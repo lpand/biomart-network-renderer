@@ -73,28 +73,37 @@ nt.draw = function (writee) {
                 .append('svg:svg')
                 .attr({
                         width: 700,
-                        height: 600
+                        height: 600,
                         'id': 'network-svg' })
                 .append('svg:g')
                 .attr('id', 'network-group')
 
-        d3.BiomartVisualization.Network.make(this._svg, this._nodes, this._edges, biomart.networkRendererConfig)
-
+        var config = biomart.networkRendererConfig
+        config.graphConfig.width = writee.width()
+        config.graphConfig.height = writee.height()
+        config.forceConfig.size = [
+                config.graphConfig.width,
+                config.graphConfig.height
+        ]
+                
+        d3.BiomartVisualization.Network.make(this._svg,
+                                             this._nodes,
+                                             this._edges,
+                                             config)
 }
 
 nt.clear = function () {
         // Should I delete them?
         this._nodes = []
         this._edges = []
-        this.header = null
-        this.node0 = null
-        this.node1 = null
-        // graph.remove()
+        this.header = this.node0 = this.node1 = null
+        this._svg.remove()
+        this._svg = null
 }
 
 nt.destroy = function () {
-        // svg.remove()
         this.clear()
+        this._nodes = this._edges = null
 }
 
 // nt._makeNodes = function (row) {

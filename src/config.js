@@ -1,0 +1,39 @@
+
+;(function () {
+        "use strict";
+
+        biomart.networkRendererConfig = {
+                graphConfig: {
+                        nodeClassName: 'network-bubble',
+                        edgeClassName: 'network-edge',
+                        radius: 10,
+                        color: function(d) { return '#bcbd22' },
+                        id: function (d, i) { return 'node' + i }
+                },
+
+                forceConfig: {
+                    linkDistance: function(link) {
+                        // return link.source.weight + link.target.weight > 8 ? 200 : 100
+                        if (link.source.weight > 4 ^ link.target.weight > 4)
+                            return 150
+                        if (link.source.weight > 4 && link.target.weight > 4)
+                            return 350
+                        return 100
+                    },
+                    charge: -500,
+                    gravity: 0.06, // default 0.1
+                },
+
+                textConfig: {
+                        'font-family': 'serif',
+                        'font-size': '1em',
+                        'stroke': '#ff0000',
+                        'text-anchor': 'start',
+                        'text': function (d, i) {
+                            return 'node'+ i },
+                        'doubleLayer': { 'className': 'network-shadow' }
+                }
+        }
+
+
+}) ()
