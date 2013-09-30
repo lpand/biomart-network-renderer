@@ -1,0 +1,25 @@
+{
+  "name": "biomart-network-renderer",
+  "version": "0.0.0",
+  "description": "network renderer for biomart",
+  "main": "src/network_renderer.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "testem"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lpand/biomart-network-renderer.git"
+  },
+  "author": "Luca Pandini",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/lpand/biomart-network-renderer/issues"
+  },
+  "devDependencies": {
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt": "~0.4.1"
+  }
+}
