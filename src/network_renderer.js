@@ -68,8 +68,17 @@ nt.printHeader = function(header, writee) {
 
 
 nt.draw = function (writee) {
-        // Should be a jQuery object
-        var container = writee[0]
+        // writee should be a jQuery object
+        this._svg = d3.select(writee[0])
+                .append('svg:svg')
+                .attr({
+                        width: 700,
+                        height: 600
+                        'id': 'network-svg' })
+                .append('svg:g')
+                .attr('id', 'network-group')
+
+        d3.BiomartVisualization.Network.make(this._svg, this._nodes, this._edges, biomart.networkRendererConfig)
 
 }
 
