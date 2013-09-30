@@ -61,6 +61,8 @@ nt._makeNE = function (row) {
 // results.network.tagName ?
 // rows : array of arrays
 nt.parse = function (rows, writee) {
+        this._nodes = []
+        this._edges = []
         for (var i = 0, rLen = rows.length; i < rLen; ++i)
                 this._makeNE(rows[i])
 }
@@ -91,11 +93,11 @@ nt.draw = function (writee) {
                 .attr('id', 'network-group')
 
         var config = biomart.networkRendererConfig
-        config.graphConfig.width = writee.width()
-        config.graphConfig.height = writee.height()
-        config.forceConfig.size = [
-                config.graphConfig.width,
-                config.graphConfig.height
+        config.graph.width = writee.width()
+        config.graph.height = writee.height()
+        config.force.size = [
+                config.graph.width,
+                config.graph.height
         ]
                 
         d3.BiomartVisualization.Network.make(this._svg,

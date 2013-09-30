@@ -3,7 +3,7 @@
         "use strict";
 
         biomart.networkRendererConfig = {
-                graphConfig: {
+                graph: {
                         nodeClassName: 'network-bubble',
                         edgeClassName: 'network-edge',
                         radius: 10,
@@ -11,7 +11,7 @@
                         id: function (d, i) { return 'node' + i }
                 },
 
-                forceConfig: {
+                force: {
                     linkDistance: function(link) {
                         // return link.source.weight + link.target.weight > 8 ? 200 : 100
                         if (link.source.weight > 4 ^ link.target.weight > 4)
@@ -24,7 +24,7 @@
                     gravity: 0.06, // default 0.1
                 },
 
-                textConfig: {
+                text: {
                         'font-family': 'serif',
                         'font-size': '1em',
                         'stroke': '#ff0000',
