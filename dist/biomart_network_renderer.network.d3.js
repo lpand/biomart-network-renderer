@@ -9033,48 +9033,70 @@ BiomartVisualization.Network = {
 
 d3.BiomartVisualization = BiomartVisualization;
 
-
-;(function () {
-        "use strict";
-
-        biomart.networkRendererConfig = {
-                graph: {
-                        nodeClassName: 'network-bubble',
-                        edgeClassName: 'network-edge',
-                        radius: 10,
-                        color: function(d) { return '#bcbd22' }
-                },
-
-                force: {
-                    linkDistance: function(link) {
-                        // return link.source.weight + link.target.weight > 8 ? 200 : 100
-                        if (link.source.weight > 4 ^ link.target.weight > 4)
-                            return 150
-                        if (link.source.weight > 4 && link.target.weight > 4)
-                            return 350
-                        return 100
-                    },
-                    charge: -500,
-                    gravity: 0.06, // default 0.1
-                },
-
-                text: {
-                        'font-family': 'serif',
-                        'font-size': '1em',
-                        'stroke': '#ff0000',
-                        'text-anchor': 'start',
-                        'text': function (d, i) {
-                            return 'node'+ i },
-                        'doubleLayer': { 'className': 'network-shadow' }
-                }
-        }
-
-
-}) ()
-
 ;(function (d3) {
 
 "use strict";
+
+
+
+biomart.networkRendererConfig = {
+        graph: {
+                nodeClassName: 'network-bubble',
+                edgeClassName: 'network-edge',
+                radius: 10,
+                color: function(d) { return '#bcbd22' }
+        },
+
+        force: {
+            linkDistance: function(link) {
+                // return link.source.weight + link.target.weight > 8 ? 200 : 100
+                if (link.source.weight > 4 ^ link.target.weight > 4)
+                    return 150
+                if (link.source.weight > 4 && link.target.weight > 4)
+                    return 350
+                return 100
+            },
+            charge: -500,
+            gravity: 0.06, // default 0.1
+        },
+
+        text: {
+                'font-family': 'serif',
+                'font-size': '1em',
+                'stroke': '#ff0000',
+                'text-anchor': 'start',
+                'doubleLayer': { 'className': 'network-shadow' }
+        }
+}
+
+
+
+function resizeHandler () {
+        var w, h
+        if (this._svg && !this._svg.empty()) {
+                w = $(window).width()
+                h = $(window).height()
+                this._svg.attr({
+                        width: w,
+                        height: h
+                })
+                this._visualization.force.size([w, h])
+        }
+}
+
+function resize (listener, interval) {
+    var resizeTimeout
+
+    window.addEventListener('resize', function() {
+        if (! resizeTimeout) {
+            resizeTimeout = setTimeout(function() {
+                resizeTimeout = null
+                listener.apply(null, arguments)
+            }, interval || 66)
+        }
+    })
+}
+
 
 // ============================================================================
 // NOTE!!
@@ -9156,21 +9178,23 @@ nt.printHeader = function(header, writee) {
 
 
 nt.draw = function (writee) {
-        // writee should be a jQuery object
+        // Use body because the container is too small now
+        var w = $(window).width()
+        var h = $(window).height()
+
+        // writee should be a jQuery object        
         this._svg = d3.select(writee[0])
                 .append('svg:svg')
                 .attr({
-                        width: 700,
-                        height: 600,
+                        width: w,
+                        height: h,
                         'id': 'network-svg' })
                 .append('svg:g')
                 .attr('id', 'network-group')
 
         var config = biomart.networkRendererConfig
-        config.graph.width = writee.width()
-        config.graph.height = writee.height()
         var self = this
-        config.text['id'] = config.graph['id'] = function (d) {
+        config.text.text = config.graph['id'] = function (d) {
                 var node = null
                 if (self.node0.key in d)
                         node = 'node0'
@@ -9178,15 +9202,13 @@ nt.draw = function (writee) {
 
                 return self[node].value(d)
         }
-        config.force.size = [
-                config.graph.width,
-                config.graph.height
-        ]
+        config.force.size = [w, h]
                 
-        d3.BiomartVisualization.Network.make(this._svg,
-                                             this._nodes,
-                                             this._edges,
-                                             config)
+        this._visualization = d3.BiomartVisualization.Network.make(this._svg,
+                                                                 this._nodes,
+                                                                 this._edges,
+                                                                 config)
+        resize(resizeHandler.bind(this))
 }
 
 nt.clear = function () {
@@ -9196,6 +9218,7 @@ nt.clear = function () {
         // this.header = this.node0 = this.node1 = null
         if (this._svg) this._svg.remove()
         this._svg = null
+        this._visualization = null
 }
 
 nt.destroy = function () {
@@ -9223,5 +9246,4 @@ nt.destroy = function () {
 //         ]
 // }
 
-
-})(d3); // underscore.js
+})(d3);

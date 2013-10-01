@@ -1,6 +1,3 @@
-;(function (d3) {
-
-"use strict";
 
 // ============================================================================
 // NOTE!!
@@ -82,10 +79,11 @@ nt.printHeader = function(header, writee) {
 
 
 nt.draw = function (writee) {
-        // writee should be a jQuery object
-        var w = writee.width()
-        var h = writee.height()
-        
+        // Use body because the container is too small now
+        var w = $(window).width()
+        var h = $(window).height()
+
+        // writee should be a jQuery object        
         this._svg = d3.select(writee[0])
                 .append('svg:svg')
                 .attr({
@@ -107,10 +105,11 @@ nt.draw = function (writee) {
         }
         config.force.size = [w, h]
                 
-        d3.BiomartVisualization.Network.make(this._svg,
-                                             this._nodes,
-                                             this._edges,
-                                             config)
+        this._visualization = d3.BiomartVisualization.Network.make(this._svg,
+                                                                 this._nodes,
+                                                                 this._edges,
+                                                                 config)
+        resize(resizeHandler.bind(this))
 }
 
 nt.clear = function () {
@@ -120,6 +119,7 @@ nt.clear = function () {
         // this.header = this.node0 = this.node1 = null
         if (this._svg) this._svg.remove()
         this._svg = null
+        this._visualization = null
 }
 
 nt.destroy = function () {
@@ -146,6 +146,3 @@ nt.destroy = function () {
 //                 ...
 //         ]
 // }
-
-
-})(d3); // underscore.js
