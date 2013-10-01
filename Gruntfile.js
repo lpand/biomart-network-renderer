@@ -2,6 +2,7 @@ module.exports = function(grunt) {
         'use strict';
 
         var basic = [
+                'lib/biomart-network/dist/biomart_network.js',
                 'src/header.js',
                 'src/config.js',
                 'src/resize.js',
@@ -21,8 +22,7 @@ module.exports = function(grunt) {
                                         separator: "\n",
                                 },
                                 files: {
-                                        'dist/biomart_network_renderer.js': basic,
-                                        'dist/biomart_network_renderer.network.d3.js': withLib
+                                        'dist/biomart_network_renderer.js': basic
                                 }
                         }
                 }

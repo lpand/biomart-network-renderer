@@ -9193,8 +9193,6 @@ nt.draw = function (writee) {
                         width: w,
                         height: h,
                         'id': 'network-svg' })
-                .append('svg:g')
-                .attr('id', 'network-group')
 
         var config = biomart.networkRendererConfig
         var self = this
