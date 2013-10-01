@@ -1,3 +1,42 @@
+
+;(function () {
+        "use strict";
+
+        biomart.networkRendererConfig = {
+                graph: {
+                        nodeClassName: 'network-bubble',
+                        edgeClassName: 'network-edge',
+                        radius: 10,
+                        color: function(d) { return '#bcbd22' }
+                },
+
+                force: {
+                    linkDistance: function(link) {
+                        // return link.source.weight + link.target.weight > 8 ? 200 : 100
+                        if (link.source.weight > 4 ^ link.target.weight > 4)
+                            return 150
+                        if (link.source.weight > 4 && link.target.weight > 4)
+                            return 350
+                        return 100
+                    },
+                    charge: -500,
+                    gravity: 0.06, // default 0.1
+                },
+
+                text: {
+                        'font-family': 'serif',
+                        'font-size': '1em',
+                        'stroke': '#ff0000',
+                        'text-anchor': 'start',
+                        'text': function (d, i) {
+                            return 'node'+ i },
+                        'doubleLayer': { 'className': 'network-shadow' }
+                }
+        }
+
+
+}) ()
+
 ;(function (d3) {
 
 "use strict";
@@ -83,21 +122,20 @@ nt.printHeader = function(header, writee) {
 
 nt.draw = function (writee) {
         // writee should be a jQuery object
-        var w = writee.width()
-        var h = writee.height()
-        
         this._svg = d3.select(writee[0])
                 .append('svg:svg')
                 .attr({
-                        width: w,
-                        height: h,
+                        width: 700,
+                        height: 600,
                         'id': 'network-svg' })
                 .append('svg:g')
                 .attr('id', 'network-group')
 
         var config = biomart.networkRendererConfig
+        config.graph.width = writee.width()
+        config.graph.height = writee.height()
         var self = this
-        config.text.text = config.graph['id'] = function (d) {
+        config.graph['id'] = function (d) {
                 var node = null
                 if (self.node0.key in d)
                         node = 'node0'
@@ -105,7 +143,10 @@ nt.draw = function (writee) {
 
                 return self[node].value(d)
         }
-        config.force.size = [w, h]
+        config.force.size = [
+                config.graph.width,
+                config.graph.height
+        ]
                 
         d3.BiomartVisualization.Network.make(this._svg,
                                              this._nodes,

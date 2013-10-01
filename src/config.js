@@ -7,8 +7,7 @@
                         nodeClassName: 'network-bubble',
                         edgeClassName: 'network-edge',
                         radius: 10,
-                        color: function(d) { return '#bcbd22' },
-                        id: function (d, i) { return 'node' + i }
+                        color: function(d) { return '#bcbd22' }
                 },
 
                 force: {
@@ -29,8 +28,6 @@
                         'font-size': '1em',
                         'stroke': '#ff0000',
                         'text-anchor': 'start',
-                        'text': function (d, i) {
-                            return 'node'+ i },
                         'doubleLayer': { 'className': 'network-shadow' }
                 }
         }
