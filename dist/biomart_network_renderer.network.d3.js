@@ -8991,11 +8991,11 @@ BiomartVisualization.Network = {
                         var r = typeof config.graph.radius === 'number'
                                 ? config.graph.radius
                                 : d3.max(nodes, config.graph.radius)
-                        var w = config.force.size[0]
-                        var h = config.force.size[1]
 
                         // Layout configuration
                         config.force.tick = function() {
+                                var forceSize = force.size()
+
                                 graphChart.links.attr({
                                         x1: function(d) { return d.source.x },
                                         y1: function(d) { return d.source.y },
@@ -9004,8 +9004,8 @@ BiomartVisualization.Network = {
 
                                 graphChart.bubbles
                                         .attr('transform', function (d) {
-                                                d.x = Math.max(r, Math.min(w - r, d.x))
-                                                d.y = Math.max(r, Math.min(h - r, d.y))
+                                                d.x = Math.max(r, Math.min(forceSize[0] - r, d.x))
+                                                d.y = Math.max(r, Math.min(forceSize[1] - r, d.y))
                                                 return 'translate(' + d.x + ',' + d.y + ')' })
 
                                 config.text && text.attr('transform', function (d) {
@@ -9023,7 +9023,11 @@ BiomartVisualization.Network = {
 
                         graphChart.bubbles.call(drag)
 
-                        return graphChart
+                        return {
+                                graph: graphChart,
+                                force: force,
+                                text: text
+                        }
                 }
 
                 return make
