@@ -4,9 +4,10 @@
         ],
         "src_files": [
                 "lib/*.js",
-                "lib/biomart-network/dist/*.js",
                 "test/mock_test.js",
-                "src/**/*.js",
+                "test/biomart_network_renderer.js",
                 "test/renderer_test.js"
-        ]
+        ],
+        "before_tests": "grunt concat:test",
+        "after_tests": "rm test/biomart_network_renderer.js"
 }

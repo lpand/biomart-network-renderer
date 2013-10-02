@@ -24,6 +24,14 @@ module.exports = function(grunt) {
                                 files: {
                                         'dist/biomart_network_renderer.js': basic
                                 }
+                        },
+                        test: {
+                                options: {
+                                        separator: "\n",
+                                },
+                                files: {
+                                        'test/biomart_network_renderer.js': basic
+                                }
                         }
                 }
         })
