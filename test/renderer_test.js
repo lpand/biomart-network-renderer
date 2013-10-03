@@ -29,10 +29,16 @@ describe ('biomart.renderer.results.network', function () {
                 expect(nt.node1.value({'age': 'bar' })).toBe('bar')
         })
 
-        it ('get back to a clean state after clean is called', function () {
+        it ('does nothing when clear() is called', function() {
                 nt.clear()
-                expect(nt._nodes).toEqual([])
-                expect(nt._edges).toEqual([])
+                expect(nt._nodes).toBeDefined()
+                expect(nt._edges).toBeDefined()
+        })
+
+        it ('get back to a clean state after destroy() is called', function () {
+                nt.destroy()
+                expect(nt._nodes).toBe(null)
+                expect(nt._edges).toBe(null)
                 expect(nt._svg).toBe(null)
                 expect(nt._visualization).toBe(null)
         })
@@ -43,6 +49,7 @@ describe ('biomart.renderer.results.network', function () {
                         ['jack', '53']
                 ]
 
+                nt.printHeader('name age'.split(' '))
                 nt.parse(rows)
 
                 // I shouldn't test the internals
@@ -66,6 +73,7 @@ describe ('biomart.renderer.results.network', function () {
                 ]
 
                 nt.clear()
+                nt.printHeader('name age'.split(' '))
                 nt.parse(rows)
 
                 // I shouldn't test the internals
@@ -89,8 +97,8 @@ describe ('biomart.renderer.results.network', function () {
                 ]
 
                 nt.clear()
+                nt.printHeader('name age'.split(' '))
                 nt.parse(rows)
-
                 expect(nt._nodes).toEqual([
                         {'name': 'jack'},
                         {'age': 'cont0', _link: 'alink0'},
@@ -99,4 +107,23 @@ describe ('biomart.renderer.results.network', function () {
                 ])
         })
 
+        it ('has an svg and visualization when draw() is called', function () {
+                var rows = [
+                        ['jack', '53'],
+                        ['jack', '76']
+                ]
+                nt.printHeader('name age'.split(' '))
+                nt.parse(rows)
+                nt.draw($('body'))
+                expect(nt._svg.empty()).toBe(false)
+                expect(nt._visualization).toBeDefined()
+        })
+
 })
+
+// describe('hyperlinks', function () {
+//         var s = d3.select('body').append('sgv:svg')
+//         var data = [
+//                 {  }
+//         ]
+// })

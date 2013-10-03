@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "testem"
+    "test": "./run_tests.sh"
   },
   "repository": {
     "type": "git",

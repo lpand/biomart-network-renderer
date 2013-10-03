@@ -379,7 +379,7 @@ function hyperlinks (svg, data, config) {
                 .append('svg:a')
                 .attr({
                         'xlink:href': config.link,
-                        target: '_blank' 
+                        target: '_blank'
                 })
 
         if (config.callback)
@@ -438,8 +438,11 @@ function resize (listener, interval) {
 // ============================================================================
 var nt = biomart.renderer.results.network = Object.create(biomart.renderer.results.plain)
 
-nt._nodes = []
-nt._edges = []
+nt._init = function () {
+        this._nodes = []
+        this._edges = []
+        this._svg = this._visualization = null
+}
 
 // row: array of fields
 nt._makeNodes = function (row) {
@@ -505,14 +508,13 @@ nt._makeNE = function (row) {
 // results.network.tagName ?
 // rows : array of arrays
 nt.parse = function (rows, writee) {
-        this._nodes = []
-        this._edges = []
         for (var i = 0, rLen = rows.length; i < rLen; ++i)
                 this._makeNE(rows[i])
 }
 
 // Intercept the header
 nt.printHeader = function(header, writee) {
+        this._init()
         this.header = header
         this.header.forEach(function (nodeId, idx) {
                 this['node'+idx] = {
@@ -524,19 +526,28 @@ nt.printHeader = function(header, writee) {
         }, this)
 }
 
+function noDraw(svg) {
+        if (svg && 'empty' in svg)
+                return svg.empty()
+        return true
+}
 
 nt.draw = function (writee) {
         // Use body because the container is too small now
         var w = $(window).width()
         var h = $(window).height()
 
-        // writee should be a jQuery object        
-        this._svg = d3.select(writee[0])
-                .append('svg:svg')
-                .attr({
-                        width: w,
-                        height: h,
-                        'id': 'network-svg' })
+        if (noDraw(this._svg)) {
+                // writee should be a jQuery object        
+                this._svg = d3.select(writee[0])
+                        .append('svg:svg')
+                        .attr({
+                                width: w,
+                                height: h,
+                                'id': 'network-svg' })
+
+                resize(resizeHandler.bind(this))
+        }
 
         var config = biomart.networkRendererConfig
         var self = this
@@ -551,22 +562,22 @@ nt.draw = function (writee) {
         config.force.size = [w, h]
                 
         this._visualization = graph(this._svg, this._nodes, this._edges, config)
-        resize(resizeHandler.bind(this))
 }
 
 nt.clear = function () {
         // Should I delete them?
-        this._nodes = []
-        this._edges = []
-        // this.header = this.node0 = this.node1 = null
-        if (this._svg) this._svg.remove()
-        this._svg = null
-        this._visualization = null
+        // this._nodes = []
+        // this._edges = []
+        // // this.header = this.node0 = this.node1 = null
+        // if (this._svg) this._svg.remove()
+        // this._svg = null
+        // this._visualization = null
 }
 
 nt.destroy = function () {
-        this.clear()
-        this._nodes = this._edges = null
+        // this.clear()
+        if (!noDraw(this._svg)) this._svg.remove()
+        this._nodes = this._edges = this._svg = this._visualization = null
 }
 
 // nt._makeNodes = function (row) {
