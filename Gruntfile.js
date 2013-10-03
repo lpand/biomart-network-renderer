@@ -1,14 +1,22 @@
 module.exports = function(grunt) {
         'use strict';
 
+        var core = [
+                'src/config.js',
+                'src/graph.js',
+                'src/resize.js',
+                'src/network_renderer.js'
+        ]
+
         var basic = [
                 'lib/biomart-network/dist/biomart_network.js',
                 'src/header.js',
-                'src/config.js',
-                'src/resize.js',
-                'src/network_renderer.js',
-                'src/footer.js'
-        ]
+        ].concat(core, ['src/footer.js'])
+
+        var test = [
+                'lib/biomart-network/dist/biomart_network.js',
+                'src/header.js', 'test/*.js'
+        ].concat(core, ['src/footer.js'])
 
         var withLib = ['lib/biomart-network/dist/biomart_network.d3.js']
 

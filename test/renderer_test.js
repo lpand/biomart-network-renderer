@@ -34,6 +34,7 @@ describe ('biomart.renderer.results.network', function () {
                 expect(nt._nodes).toEqual([])
                 expect(nt._edges).toEqual([])
                 expect(nt._svg).toBe(null)
+                expect(nt._visualization).toBe(null)
         })
 
         it ('creates nodes and edges when rows are provided', function () {
@@ -77,6 +78,24 @@ describe ('biomart.renderer.results.network', function () {
                 expect(nt._edges).toEqual([
                         { source: nt._nodes[0], target: nt._nodes[1] },
                         { source: nt._nodes[0], target: nt._nodes[2] }
+                ])
+        })
+
+        it ('when value is an hyperlink creates proper nodes', function () {
+                var rows = [
+                        ['jack', '<a href="alink0">cont0</a>'],
+                        ['jack', '<a href="alink1">cont1</a>'],
+                        ['jack', '76']
+                ]
+
+                nt.clear()
+                nt.parse(rows)
+
+                expect(nt._nodes).toEqual([
+                        {'name': 'jack'},
+                        {'age': 'cont0', _link: 'alink0'},
+                        {'age': 'cont1', _link: 'alink1'},
+                        {'age': '76'}
                 ])
         })
 
