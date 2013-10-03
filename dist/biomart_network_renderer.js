@@ -278,7 +278,7 @@ biomart.networkRendererConfig = {
                 nodeClassName: 'network-bubble',
                 edgeClassName: 'network-edge',
                 radius: 10,
-                color: function(d) { return '#bcbd22' }
+                color: function(d) { return '#0A6AF7' }
         },
 
         force: {
