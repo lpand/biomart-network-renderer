@@ -11,12 +11,27 @@ nt._edges = []
 
 // row: array of fields
 nt._makeNodes = function (row) {
-        var n1 = {}, n2 = {}
+        var n0 = {}, n1 = {}
+        var col0 = row[0], col1 = row[1]
+        var k0 = this.node0.key, k1 = this.node1.key
+        // If it's a link
+        if (col0.indexOf('<a') >= 0) {
+                col0 = $(col0)
+                n0[k0] = col0.text()
+                n0._link = col0.attr('href')
+        } else {
+                n0[k0] = col0
+        }
 
-        n1[this.node0.key] = row[0]
-        n2[this.node1.key] = row[1]
+        if (col1.indexOf('<a') >= 0) {
+                col1 = $(col1)
+                n1[k1] = col1.text()
+                n1._link = col1.attr('href')
+        } else {
+                n1[k1] = col1
+        }
 
-        return [n1, n2]
+        return [n0, n1]
 }
 
 nt._makeNE = function (row) {
@@ -103,10 +118,7 @@ nt.draw = function (writee) {
         }
         config.force.size = [w, h]
                 
-        this._visualization = d3.BiomartVisualization.Network.make(this._svg,
-                                                                 this._nodes,
-                                                                 this._edges,
-                                                                 config)
+        this._visualization = graph(this._svg, this._nodes, this._edges, config)
         resize(resizeHandler.bind(this))
 }
 
