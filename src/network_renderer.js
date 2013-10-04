@@ -10,6 +10,8 @@ nt._init = function () {
         this._nodes = []
         this._edges = []
         this._svg = this._visualization = null
+        this._cache = []
+        this._nodeBuffer = []
 }
 
 // row: array of fields
@@ -76,8 +78,17 @@ nt._makeNE = function (row) {
 // results.network.tagName ?
 // rows : array of arrays
 nt.parse = function (rows, writee) {
-        for (var i = 0, rLen = rows.length; i < rLen; ++i)
-                this._makeNE(rows[i])
+       rows.forEach(function (row) {
+                if (row[1].trim() === '') {
+                        this._cache.push(row)
+                } else {
+                        this._cache.forEach(function (cacheRow) {
+                                cacheRow[1] = row[1]
+                        })
+                        Array.prototype.push.apply(this._nodeBuffer, this._cache)
+                        this._cache = []
+                }
+       }, this)
 }
 
 // Intercept the header
@@ -128,7 +139,11 @@ nt.draw = function (writee) {
                 return self[node].value(d)
         }
         config.force.size = [w, h]
-                
+        
+        for (var i = 0, nLen = this._nodeBuffer.length; i < nLen; ++i)
+                this._makeNE(this._nodeBuffer[i])
+
+        this._nodeBuffer = []
         this._visualization = graph(this._svg, this._nodes, this._edges, config)
 }
 
@@ -145,7 +160,7 @@ nt.clear = function () {
 nt.destroy = function () {
         // this.clear()
         if (!noDraw(this._svg)) this._svg.remove()
-        this._nodes = this._edges = this._svg = this._visualization = null
+        this._nodes = this._edges = this._svg = this._visualization = this._nodeBuffer = this._cache = null
 }
 
 // nt._makeNodes = function (row) {
