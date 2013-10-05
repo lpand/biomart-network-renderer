@@ -1,4 +1,5 @@
 {
+        "framework": "mocha+chai",
         "launch_in_dev": [
                 "Chrome"
         ],
