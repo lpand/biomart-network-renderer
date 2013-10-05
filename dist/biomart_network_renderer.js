@@ -258,7 +258,7 @@ function textCallback (_, config) {
 
         var textGroup = this.append('svg:g')
 
-        // This could be improved returning a different func 
+        // This could be improved returning a different func
         // chosen by the doubleLayer param
         if (config.doubleLayer) {
                 textGroup.append('svg:text')
@@ -277,7 +277,7 @@ biomart.networkRendererConfig = {
         graph: {
                 nodeClassName: 'network-bubble',
                 edgeClassName: 'network-edge',
-                radius: 10,
+                radius: 5,
                 color: function(d) { return '#0A6AF7' }
         },
 
@@ -285,18 +285,18 @@ biomart.networkRendererConfig = {
                 linkDistance: function(link) {
                         // return link.source.weight + link.target.weight > 8 ? 200 : 100
                         if (link.source.weight > 4 ^ link.target.weight > 4)
-                            return 150
+                            return 100
                         if (link.source.weight > 4 && link.target.weight > 4)
-                            return 350
-                        return 100
+                            return 200
+                        return 50
                 },
-                charge: -500,
-                gravity: 0.06, // default 0.1
+                charge: -300,
+                gravity: 0.175, // 0.06
         },
 
         text: {
-                'font-family': 'serif',
-                'font-size': '1em',
+                'font-family': 'verdana, times new roman, tahoma',
+                'font-size': '0.7em',
                 'stroke': '#ff0000',
                 'text-anchor': 'start',
                 'doubleLayer': { 'className': 'network-shadow' },
@@ -363,6 +363,11 @@ function graph (svg, nodes, edges, config) {
 
         graphChart.bubbles.call(drag)
 
+        setTimeout(function () {
+                force.stop()
+                graphChart.bubbles.data().forEach(function (d) { d.fixed = true })
+        }, 5000)
+
         return {
                 graph: graphChart,
                 force: force,
@@ -374,7 +379,7 @@ function graph (svg, nodes, edges, config) {
 function hyperlinks (svg, data, config) {
         var update = svg.selectAll('a')
                 .data(data)
-                
+
         var a = update.enter()
                 .append('svg:a')
                 .attr({
@@ -517,6 +522,9 @@ nt.parse = function (rows, writee) {
                         this._cache.forEach(function (cacheRow) {
                                 cacheRow[1] = row[1]
                         })
+
+                        this._cache.push(row)
+
                         Array.prototype.push.apply(this._nodeBuffer, this._cache)
                         this._cache = []
                 }
@@ -549,7 +557,7 @@ nt.draw = function (writee) {
         var h = $(window).height()
 
         if (noDraw(this._svg)) {
-                // writee should be a jQuery object        
+                // writee should be a jQuery object
                 this._svg = d3.select(writee[0])
                         .append('svg:svg')
                         .attr({
@@ -571,7 +579,7 @@ nt.draw = function (writee) {
                 return self[node].value(d)
         }
         config.force.size = [w, h]
-        
+
         for (var i = 0, nLen = this._nodeBuffer.length; i < nLen; ++i)
                 this._makeNE(this._nodeBuffer[i])
 

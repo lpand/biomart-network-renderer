@@ -9,7 +9,7 @@ function textCallback (_, config) {
 
         var textGroup = this.append('svg:g')
 
-        // This could be improved returning a different func 
+        // This could be improved returning a different func
         // chosen by the doubleLayer param
         if (config.doubleLayer) {
                 textGroup.append('svg:text')
@@ -28,7 +28,7 @@ biomart.networkRendererConfig = {
         graph: {
                 nodeClassName: 'network-bubble',
                 edgeClassName: 'network-edge',
-                radius: 10,
+                radius: 5,
                 color: function(d) { return '#0A6AF7' }
         },
 
@@ -36,18 +36,18 @@ biomart.networkRendererConfig = {
                 linkDistance: function(link) {
                         // return link.source.weight + link.target.weight > 8 ? 200 : 100
                         if (link.source.weight > 4 ^ link.target.weight > 4)
-                            return 150
+                            return 100
                         if (link.source.weight > 4 && link.target.weight > 4)
-                            return 350
-                        return 100
+                            return 200
+                        return 50
                 },
-                charge: -500,
-                gravity: 0.06, // default 0.1
+                charge: -300,
+                gravity: 0.175, // 0.06
         },
 
         text: {
-                'font-family': 'serif',
-                'font-size': '1em',
+                'font-family': 'verdana, times new roman, tahoma',
+                'font-size': '0.7em',
                 'stroke': '#ff0000',
                 'text-anchor': 'start',
                 'doubleLayer': { 'className': 'network-shadow' },

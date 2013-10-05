@@ -54,6 +54,11 @@ function graph (svg, nodes, edges, config) {
 
         graphChart.bubbles.call(drag)
 
+        setTimeout(function () {
+                force.stop()
+                graphChart.bubbles.data().forEach(function (d) { d.fixed = true })
+        }, 5000)
+
         return {
                 graph: graphChart,
                 force: force,
@@ -65,7 +70,7 @@ function graph (svg, nodes, edges, config) {
 function hyperlinks (svg, data, config) {
         var update = svg.selectAll('a')
                 .data(data)
-                
+
         var a = update.enter()
                 .append('svg:a')
                 .attr({
