@@ -85,6 +85,9 @@ nt.parse = function (rows, writee) {
                         this._cache.forEach(function (cacheRow) {
                                 cacheRow[1] = row[1]
                         })
+
+                        this._cache.push(row)
+
                         Array.prototype.push.apply(this._nodeBuffer, this._cache)
                         this._cache = []
                 }
@@ -117,7 +120,7 @@ nt.draw = function (writee) {
         var h = $(window).height()
 
         if (noDraw(this._svg)) {
-                // writee should be a jQuery object        
+                // writee should be a jQuery object
                 this._svg = d3.select(writee[0])
                         .append('svg:svg')
                         .attr({
@@ -139,7 +142,7 @@ nt.draw = function (writee) {
                 return self[node].value(d)
         }
         config.force.size = [w, h]
-        
+
         for (var i = 0, nLen = this._nodeBuffer.length; i < nLen; ++i)
                 this._makeNE(this._nodeBuffer[i])
 
