@@ -3,24 +3,17 @@ module.exports = function(grunt) {
 
         var core = [
                 'src/config.js',
+                'src/text.js',
+                'src/force.js',
+                'src/graph_chart.js',
                 'src/graph.js',
                 'src/resize.js',
                 'src/network_renderer.js'
         ]
 
-        var basic = [
-                'lib/biomart-network/dist/biomart_network.js',
-                'src/header.js',
-        ].concat(core, ['src/footer.js'])
+        var basic = ['src/header.js'].concat(core, ['src/footer.js'])
 
-        var test = [
-                'lib/biomart-network/dist/biomart_network.js',
-                'src/header.js', 'test/*.js'
-        ].concat(core, ['src/footer.js'])
-
-        var withLib = ['lib/biomart-network/dist/biomart_network.d3.js']
-
-        Array.prototype.push.apply(withLib, basic)
+        var test = core
 
         // Project configuration.
         grunt.initConfig({
@@ -38,7 +31,7 @@ module.exports = function(grunt) {
                                         separator: "\n",
                                 },
                                 files: {
-                                        'test/biomart_network_renderer.js': basic
+                                        'test/biomart_network_renderer.js': test
                                 }
                         }
                 }

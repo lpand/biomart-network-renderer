@@ -1,8 +1,7 @@
-function graph (svg, nodes, edges, config) {
-        var network = d3.BiomartVisualization.Network
+function makeGraph (svg, nodes, edges, config) {
         // Draw the graph chart without positioning the elements, and return
         // bubbles and links: { bubbles: ..., links: ... }
-        var graphChart = network.Graph(svg, nodes, edges, config.graph)
+        var graphChart = Graph(svg, nodes, edges, config.graph)
         graphChart.bubbles.on('mouseover', function () {
                 d3.select(this)
                         .transition()
@@ -48,7 +47,7 @@ function graph (svg, nodes, edges, config) {
         }
 
         // Create the layout and place the bubbles and links.
-        var force = network.Force(nodes, edges, config.force)
+        var force = Force(nodes, edges, config.force)
 
         var drag = force.drag().on('dragstart', dragstart)
 
@@ -65,35 +64,3 @@ function graph (svg, nodes, edges, config) {
                 text: text
         }
 }
-
-
-function hyperlinks (svg, data, config) {
-        var update = svg.selectAll('a')
-                .data(data)
-
-        var a = update.enter()
-                .append('svg:a')
-                .attr({
-                        'xlink:href': config.link,
-                        target: '_blank'
-                })
-
-        if (config.callback)
-                a.call(config.callback, config)
-
-        update.exit().remove()
-
-        return a
-}
-
-// function appendText () {
-//         this.each(function (d, i) {
-//                 // `this` is a group
-//                 var shadow = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-//                 var text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-//                 shadow.setAttribute('class', 'network-shadow')
-//                 this.appendChild(shadow)
-//                 this.appendChild(text)
-//         })
-// }
-
