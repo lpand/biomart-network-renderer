@@ -254,7 +254,7 @@ function makeGraph (svg, nodes, edges, config) {
         setTimeout(function () {
                 force.stop()
                 graphChart.bubbles.data().forEach(function (d) { d.fixed = true })
-        }, 5000)
+        }, 1e4)
 
         return {
                 graph: graphChart,
