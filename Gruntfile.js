@@ -7,12 +7,13 @@ module.exports = function(grunt) {
                 'src/force.js',
                 'src/graph_chart.js',
                 'src/graph.js',
+                'src/cluster.js',
                 'src/resize.js',
                 'src/network_renderer.js'
         ]
 
         var basic = ['src/header.js'].concat(core, ['src/footer.js'])
-
+        var deps = ['lib/lodash.js', 'src/header.js'].concat(core, ['src/footer.js'])
         var test = core
 
         // Project configuration.
@@ -32,6 +33,14 @@ module.exports = function(grunt) {
                                 },
                                 files: {
                                         'test/biomart_network_renderer.js': test
+                                }
+                        },
+                        deps: {
+                                options: {
+                                        separator: "\n",
+                                },
+                                files: {
+                                        'dist/biomart_network_renderer.deps.js': deps
                                 }
                         }
                 }

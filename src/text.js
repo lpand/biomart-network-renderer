@@ -44,3 +44,7 @@ function hyperlinks (svg, data, config) {
 
         return a
 }
+
+function makeText (svg, nodes, config) {
+        return hyperlinks(svg, nodes, config).selectAll('g')
+}

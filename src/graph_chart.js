@@ -78,4 +78,4 @@ var Graph = (function (d3) {
 
         return graph
 
-})(d3)
+})(d3);

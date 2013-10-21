@@ -2,7 +2,7 @@ biomart.networkRendererConfig = {
         graph: {
                 nodeClassName: 'network-bubble',
                 edgeClassName: 'network-edge',
-                radius: 5
+                radius: 11
         },
 
         force: {
@@ -15,7 +15,7 @@ biomart.networkRendererConfig = {
                         return 50
                 },
                 charge: -300,
-                gravity: 0.175, // 0.06
+                gravity: 0.06, // 0.175
         },
 
         text: {
@@ -27,3 +27,7 @@ biomart.networkRendererConfig = {
                 }
         }
 }
+
+// biomart.networkRendererConfig.force.linkDistance = 20
+biomart.networkRendererConfig.force.charge = 0
+biomart.networkRendererConfig.force.gravity = 0

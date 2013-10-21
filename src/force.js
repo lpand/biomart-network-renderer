@@ -18,17 +18,22 @@ var Force = (function (d3) {
                         .nodes(nodes)
                         .links(edges)
                         .size(config.size)
+                        .theta(config.theta || 2)
                         .gravity(config.gravity)
                         .linkDistance(config.linkDistance) // px
                         // .linkStrength(cs.linkStrength)
                         .charge(config.charge)
 
                 force.on("tick", config.tick)
-                force.start()
 
                 return force
         }
 
         return make
 
-})(d3)
+})(d3);
+
+function makeForce (nodes, edges, config) {
+        // Create the layout and place the bubbles and links.
+        return Force(nodes, edges, config)
+}
