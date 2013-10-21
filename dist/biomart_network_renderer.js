@@ -20,6 +20,7 @@ biomart.networkRendererConfig = {
                 },
                 charge: -300,
                 gravity: 0.06, // 0.175
+                threshold: 0.008
         },
 
         text: {
@@ -558,9 +559,10 @@ nt.parse = function (rows, writee) {
 
 nt.printHeader = function(header, writee) {
         this._init()
-
+        var w = $(window).width()
+        var h = $(window).height()
         var $tabsCont = writee.find('#network-list')
-        var item, tabNum
+        var item, tabNum, svg
 
         tabNum = $tabsCont.children().size() + 1
         if (tabNum === 1) writee.tabs() //
@@ -569,12 +571,19 @@ nt.printHeader = function(header, writee) {
         // For each attribute list create a tab
         writee.tabs('add', '#'+ item, Object.keys(biomart._state.queryMart.attributes)[tabNum-1])
         // Playground for the new network
-        this._svg = d3.select($('#'+ item)[0])
+        this._svg = svg = d3.select($('#'+ item)[0])
                 .append('svg:svg')
-                .attr({
-                        width: $(window).width(),
-                        height: $(window).height(),
-                        'id': 'network-svg' })
+                .attr({ width: w, height: h })
+                .append('g')
+                .call(d3.behavior.zoom().scaleExtent([0, 20]).on('zoom', function () {
+                        svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")") }))
+                .append('g')
+
+        svg.append("rect")
+                .style('fill', 'none')
+                .style('pointer-events', 'all')
+                .attr("width", w)
+                .attr("height", h);
 
         this.header = header
         this.header.forEach(function (nodeId, idx) {
@@ -665,7 +674,7 @@ nt._drawNetwork = function (config) {
         // Make the simulation in background and then draw on the screen
         force.start()
         console.time('simulation ticks')
-        for (var safe = 0; safe < 2000 && force.alpha() > 0.004; ++safe)
+        for (var safe = 0; safe < 2000 && force.alpha() > config.force.threshold; ++safe)
                 force.tick()
         console.timeEnd('simulation ticks')
 
@@ -699,7 +708,9 @@ nt.clear = function () {
 }
 
 nt.destroy = function () {
-        this._svg && this._svg.remove()
+        if (this._svg) {
+                d3.select(this._svg.node().nearestViewportElement).remove()
+        }
         this._nodes = this._edges = this._svg = this._rowBuffer = this._cache = this._adj = null
 }
 

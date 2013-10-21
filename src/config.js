@@ -16,6 +16,7 @@ biomart.networkRendererConfig = {
                 },
                 charge: -300,
                 gravity: 0.06, // 0.175
+                threshold: 0.008
         },
 
         text: {
