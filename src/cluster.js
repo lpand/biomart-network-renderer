@@ -67,15 +67,6 @@ function tick2 (attrs) {
                 searchColor(node, adj, nodes)
         })
 
-        bubbles.each(function (d) {
-                var $this = d3.select(this)
-                if (d.isHub) {
-                        $this.style('stroke', d3.rgb(d.color).darker())
-                        $this.style('stroke-width', 3)
-                }
-                $this.style('fill', d.color)
-        })
-
         // Modified version of http://bl.ocks.org/mbostock/1748247
         // Move d to be adjacent to the cluster node.
         function clusterHelper(alpha) {
@@ -114,7 +105,7 @@ function tick2 (attrs) {
         function collide(alpha) {
                 var quadtree = d3.geom.quadtree(nodes)
                 var radius = config.graph.radius
-                var padding = 25
+                var padding = config.force.cluster.padding
                 return function(d) {
                         var r = 2 * radius + padding
                         var nx1 = d.x - r

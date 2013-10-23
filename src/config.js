@@ -15,8 +15,11 @@ biomart.networkRendererConfig = {
                         return 50
                 },
                 charge: -300,
-                gravity: 0.06, // 0.175
-                threshold: 0.008
+                gravity: 0.01, // 0.175
+                threshold: 0.005,
+                cluster: {
+                        padding: 60
+                }
         },
 
         text: {
@@ -30,5 +33,8 @@ biomart.networkRendererConfig = {
 }
 
 // biomart.networkRendererConfig.force.linkDistance = 20
-biomart.networkRendererConfig.force.charge = 0
-biomart.networkRendererConfig.force.gravity = 0
+biomart.networkRendererConfig.force.charge = function (d) {
+        // return d.isHub ? 10 * d.weight * d.x/1000 : -10 * d.weight * d.x/1000
+        return d.isHub ? 4 * d.weight : -2 * d.weigth
+}
+

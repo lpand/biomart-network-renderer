@@ -18,23 +18,3 @@ function makeGraph (svg, nodes, edges, config) {
 
         return graphChart
 }
-
-
-
-// function makeNetwork (svg, nodes, edges, config) {
-
-//         var drag = force.drag().on('dragstart', dragstart)
-
-//         graphChart.bubbles.call(drag)
-
-//         setTimeout(function () {
-//                 force.stop()
-//                 graphChart.bubbles.data().forEach(function (d) { d.fixed = true })
-//         }, 1e4)
-
-//         return {
-//                 graph: graphChart,
-//                 force: force,
-//                 text: text
-//         }
-// }
