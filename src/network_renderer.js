@@ -187,6 +187,8 @@ nt._drawNetwork = function (config) {
         var drawText = 'text' in config
         var self = this
 
+        self.timers = []
+
         config.graph['id'] = function (d) {
                 var node = null
                 if (self.node0.key in d)
@@ -241,13 +243,26 @@ nt._drawNetwork = function (config) {
                 }
         })
 
+        function loop (thr, iter) {
+                var t
+                if (iter < 1000 && force.alpha() > thr) {
+                        force.tick()
+                        t = setTimeout(function () {
+                                loop(thr, ++iter)
+                        }, 1)
+                        self._addTimer(t)
+                } else {
+                        endSimulation()
+                }
+        }
         // Make the simulation in background and then draw on the screen
         force.start()
         console.time('simulation ticks')
-        for (var safe = 0; safe < 2000 && force.alpha() > config.force.threshold; ++safe)
-                force.tick()
-        console.timeEnd('simulation ticks')
-        force.stop()
+        loop(config.force.threshold, 0)
+        // for (var safe = 0; safe < 2000 && force.alpha() > config.force.threshold; ++safe)
+        //         force.tick()
+        // console.timeEnd('simulation ticks')
+        // force.stop()
 
         var oneTick = function (graph, text) {
                 graph.bubbles
@@ -293,15 +308,39 @@ nt._drawNetwork = function (config) {
                 }
         }
 
-        oneTick(graph, text)
-        force.on('tick', function () { oneTick(graph, text) })
+        function showNetwork () {
+                oneTick(graph, text)
+                setEventHandlers()
+        }
 
-        drag = force.drag().on('dragstart', function (d) {
+        function setEventHandlers() {
+                force.on('tick', function () { oneTick(graph, text) })
+
+                drag = force.drag().on('dragstart', function (d) {
+                        force.stop()
+                        d3.event.sourceEvent.stopPropagation()
+                        d.fixed = true
+                })
+                graph.bubbles.call(drag)
+        }
+
+        function endSimulation () {
+                console.timeEnd('simulation ticks')
                 force.stop()
-                d3.event.sourceEvent.stopPropagation()
-                d.fixed = true
+                showNetwork()
+        }
+}
+
+nt._addTimer = function (t) {
+        this.timers || (this.timers = [])
+        this.timers.push(t)
+}
+
+nt._clearTimers = function () {
+        this.timers.forEach(function (t) {
+                clearTimeout(t)
         })
-        graph.bubbles.call(drag)
+        self.timers = []
 }
 
 nt.clear = function () {
@@ -309,6 +348,7 @@ nt.clear = function () {
 }
 
 nt.destroy = function () {
+        this._clearTimers()
         if (this._svg) {
                 d3.select(this._svg.node().nearestViewportElement).remove()
         }
