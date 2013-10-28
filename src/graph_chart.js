@@ -31,6 +31,13 @@ var Graph = (function (d3) {
                         .append('svg:line')
                         .attr(attrs)
 
+                lines.each(function (d) {
+                        var w = 'value' in d ? d.value * 100 : 1
+                        if (w > 10) w = 10
+                        if (w < 1) w = 1
+                        d3.select(this).style('stroke-width', w)
+                })
+
                 // Exit
                 update.exit()
                         .remove()
