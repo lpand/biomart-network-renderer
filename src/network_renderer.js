@@ -138,6 +138,11 @@ nt._makeNE = function (row) {
         this._adj[index0][index1] = 1
         if (value > this._max)
                 this._max = value
+
+        var n0 = this._nodes[index0]
+        var n1 = this._nodes[index1]
+        n0.radius = 'radius' in n0 ? n0.radius + 3 : 3
+        n1.radius = 'radius' in n1 ? n1.radius + 3 : 3
         this._edges.push({source: this._nodes[index0], target: this._nodes[index1], value: value})
 }
 

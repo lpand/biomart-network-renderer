@@ -2,7 +2,9 @@ biomart.networkRendererConfig = {
         graph: {
                 nodeClassName: 'network-bubble',
                 edgeClassName: 'network-edge',
-                radius: 11
+                radius: function (d) {
+                        return 5 + d.radius
+                }
         },
 
         force: {
