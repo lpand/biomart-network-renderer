@@ -87,7 +87,7 @@ function tick2 (attrs) {
                         y = d.y - node.y
                         // distance between this node and the hub
                         l = Math.sqrt(x * x + y * y)
-                        r = node.radius + d.radius //('radius' in node ? node.radius : radius)
+                        r = 2 * (node.radius + d.radius) //('radius' in node ? node.radius : radius)
                         // if distance !== from sum of the two radius, that is, if they aren't touching
                         if (l != r) {
                                 l = (l - r) / l * alpha * k
@@ -105,7 +105,7 @@ function tick2 (attrs) {
                 var quadtree = d3.geom.quadtree(nodes)
                 var padding = config.force.cluster.padding
                 return function(d) {
-                        var r = d.radius + maxRadius + padding
+                        var r = 2 * (d.radius + maxRadius) + padding
                         var nx1 = d.x - r
                         var nx2 = d.x + r
                         var ny1 = d.y - r
@@ -115,7 +115,7 @@ function tick2 (attrs) {
                                         var x = d.x - quad.point.x
                                         var y = d.y - quad.point.y
                                         var l = Math.sqrt(x * x + y * y)
-                                        var r = d.radius + quad.point.radius + (d.color !== quad.point.color) * padding
+                                        var r = 2 * (d.radius + quad.point.radius) + (d.color !== quad.point.color) * padding + padding
                                         if (l < r) {
                                                 l = (l - r) / l * alpha
                                                 d.x -= x *= l
