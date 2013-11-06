@@ -8,6 +8,9 @@ biomart.networkRendererConfig = {
                 edgeClassName: 'network-edge',
                 radius: function (d) {
                         return 5 + d.radius
+                },
+                'id': function (d) {
+                        return d._key
                 }
         },
 
@@ -423,7 +426,7 @@ function resize (listener, interval) {
 }
 
 
-
+var concat = Array.prototype.push
 // ============================================================================
 // NOTE!!
 //
@@ -460,53 +463,60 @@ nt._init = function () {
         this._max = 0
 }
 
-// row: array of fields
-nt._makeNodes = function (row) {
-        var n0 = {}, n1 = {}
-        var col0 = row[0], col1 = row[1]
-        var k0 = this.node0.key, k1 = this.node1.key
-        // If it's a link
-        if (col0.indexOf('<a') >= 0) {
-                col0 = $(col0)
-                n0[k0] = col0.text()
-                n0._link = col0.attr('href')
-        } else {
-                n0[k0] = col0
-        }
+// function equal (o1, o2) {
+//         var ks1 = Object.keys(o1), ks2 = Object.keys(o2), len, k1, k2
+//         if ((len = ks1.length) != ks2.length)
+//                 return false
+//         for (var i = 0; i < len; ++i) {
+//                 k1 = o1[ks1[i]]
+//                 k2 = o2[ks2[i]]
+//                 if (typeof k1 === 'object')
+//                 if (k1 != k2)
+//         }
+// }
 
-        if (col1.indexOf('<a') >= 0) {
-                col1 = $(col1)
-                n1[k1] = col1.text()
-                n1._link = col1.attr('href')
-        } else {
-                n1[k1] = col1
-        }
+function annotation (keys, values) {
+        var a = { typeId: 'annotation' }
+        addProp(a, keys[0], values[0])
+        a._key = a[keys[0]]
+        addProp(a, keys[1], values[1])
+        a.radius = a[keys[1]] * 100
+        return a
+}
 
-        return [n0, n1]
+function gene (k, v) {
+        var g = { typeId: 'gene' }
+        addProp(g, k, v)
+        g._key = g[k]
+        g.radius = 8
+        return g
+}
+
+function genes (keys, values) {
+        var g = [], vs = values[2].split(',')
+        for (var i = 0, len = vs.length; i < len; ++i) {
+                g.push(gene(keys[2], vs[i]))
+        }
+        return g
 }
 
 nt._makeNodes = function (row) {
-        var n0 = {}, n1 = {}
-        var col0 = row[0], col1 = row[1]
-        var k0 = this.node0.key, k1 = this.node1.key
-        // If it's a link
-        if (col0.indexOf('<a') >= 0) {
-                col0 = $(col0)
-                n0[k0] = col0.text()
-                n0._link = col0.attr('href')
+        var a = [annotation(this.header, row)]
+        var gs = genes(this.header, row)
+        concat.apply(a, gs)
+        return a
+}
+
+function addProp (node, key, value) {
+        if (value.indexOf('<a') >= 0) {
+                value = $(value)
+                node[key] = value.text()
+                node._link = value.attr('href')
         } else {
-                n0[k0] = col0
+                node[key] = value
         }
 
-        if (col1.indexOf('<a') >= 0) {
-                col1 = $(col1)
-                n1[k1] = col1.text()
-                n1._link = col1.attr('href')
-        } else {
-                n1[k1] = col1
-        }
-
-        return [n0, n1]
+        return node
 }
 
 function findIndex(collection, cb) {
@@ -518,56 +528,44 @@ function findIndex(collection, cb) {
 }
 
 nt._makeNE = function (row) {
-        var nodePair = this._makeNodes(row)
-        var val0Func = this.node0.value, val1Func = this.node1.value
-        var node0Val = val0Func(nodePair[0]), node1Val = val1Func(nodePair[1])
+        var self = this
+        var nodes = this._makeNodes(row)
+        var newNode
+        var ann = nodes[0]
+        var annIndex
+        var geneIndex
 
-        var index0 = findIndex(this._nodes, function (n) {
-                return val0Func(n) === node0Val
+        function comp (n) {
+                var h
+                return n.typeId === newNode.typeId &&
+                        ((h = self.header[0]) in n
+                                ? n[h] === newNode[h]
+                                : n[h = self.header[2]] === newNode[h])
+        }
+
+        newNode = ann
+        annIndex = findIndex(this._nodes, comp)
+        if (annIndex < 0) {
+                annIndex = this._nodes.push(ann) - 1
+        }
+        ann = this._nodes[annIndex]
+
+        nodes.slice(1).forEach(function (n) {
+                var value
+                newNode = n
+                geneIndex = findIndex(self._nodes, comp)
+                if (geneIndex < 0) {
+                        geneIndex = self._nodes.push(newNode) - 1
+                }
+                newNode = self._nodes[geneIndex]
+
+                if (! self._adj[annIndex])
+                        self._adj[annIndex] = []
+
+                self._adj[annIndex][geneIndex] = 1
+
+                self._edges.push({source: self._nodes[geneIndex], target: self._nodes[annIndex], value: 0.01})
         })
-        var index1 = findIndex(this._nodes, function (n) {
-                return val1Func(n) === node1Val
-        })
-
-        if (index0 < 0)
-                index0 = this._nodes.push(nodePair[0]) - 1
-        if (index1 < 0)
-                index1 = this._nodes.push(nodePair[1]) - 1
-        if (! this._adj[index0])
-                this._adj[index0] = []
-
-        this._adj[index0][index1] = 1
-}
-
-nt._makeNE = function (row) {
-        var value = +row[2]
-        var nodePair = this._makeNodes(row)
-        var val0Func = this.node0.value, val1Func = this.node1.value
-        var node0Val = val0Func(nodePair[0]), node1Val = val1Func(nodePair[1])
-
-        var index0 = findIndex(this._nodes, function (n) {
-                return val0Func(n) === node0Val
-        })
-        var index1 = findIndex(this._nodes, function (n) {
-                return val1Func(n) === node1Val
-        })
-
-        if (index0 < 0)
-                index0 = this._nodes.push(nodePair[0]) - 1
-        if (index1 < 0)
-                index1 = this._nodes.push(nodePair[1]) - 1
-        if (! this._adj[index0])
-                this._adj[index0] = []
-
-        this._adj[index0][index1] = 1
-        if (value > this._max)
-                this._max = value
-
-        var n0 = this._nodes[index0]
-        var n1 = this._nodes[index1]
-        n0.radius = 'radius' in n0 ? n0.radius + 3 : 3
-        n1.radius = 'radius' in n1 ? n1.radius + 3 : 3
-        this._edges.push({source: this._nodes[index0], target: this._nodes[index1], value: value})
 }
 
 function instanceEdges (adj, nodes, edges) {
@@ -628,14 +626,6 @@ nt.printHeader = function(header, writee) {
                 .attr("height", h * 8)
 
         this.header = header
-        this.header.forEach(function (nodeId, idx) {
-                this['node'+idx] = {
-                        key: nodeId,
-                        value: function (nodeObj) {
-                                return nodeObj[nodeId]
-                        }
-                }
-        }, this)
 }
 
 nt.draw = function (writee) {
@@ -669,14 +659,14 @@ nt._drawNetwork = function (config) {
 
         self.timers = []
 
-        config.graph['id'] = function (d) {
-                var node = null
-                if (self.node0.key in d)
-                        node = 'node0'
-                else node = 'node1'
+        // config.graph['id'] = function (d) {
+        //         var node = null
+        //         if (self.node0.key in d)
+        //                 node = 'node0'
+        //         else node = 'node1'
 
-                return self[node].value(d)
-        }
+        //         return self[node].value(d)
+        // }
 
         config.force.size = [w, h]
 
