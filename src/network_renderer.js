@@ -5,7 +5,7 @@ var concat = Array.prototype.push
 //
 // Just for now ignore renderInvalid Option!
 // ============================================================================
-var nt = biomart.renderer.results.network = Object.create(biomart.renderer.results.plain)
+var nt = biomart.renderer.results.enrichment = Object.create(biomart.renderer.results.plain)
 
 // The wrap container is a div.
 // This element is created inside oldGetElement
@@ -21,7 +21,11 @@ nt.getElement = function () {
         // Create the container
         var $elem = oldGetElement.call(this)
         // This is the actual tab list
+
+        // var $tabWrap = $('<div class="network-tabs-wrapper">')
         $elem.append('<ul id="network-list" class="network-tabs"></ul>')
+        // $elem.append($tabWrap)
+        // $elem.append('<div id="network-report-table" class="network-report-table"></div>')
         return $elem
 }
 
@@ -35,18 +39,6 @@ nt._init = function () {
         this._adj = []
         this._max = 0
 }
-
-// function equal (o1, o2) {
-//         var ks1 = Object.keys(o1), ks2 = Object.keys(o2), len, k1, k2
-//         if ((len = ks1.length) != ks2.length)
-//                 return false
-//         for (var i = 0; i < len; ++i) {
-//                 k1 = o1[ks1[i]]
-//                 k2 = o2[ks2[i]]
-//                 if (typeof k1 === 'object')
-//                 if (k1 != k2)
-//         }
-// }
 
 function annotation (keys, values) {
         var a = { typeId: 'annotation' }
@@ -174,18 +166,20 @@ nt.printHeader = function(header, writee) {
         var w = $(window).width()
         var h = $(window).height()
         var $tabsCont = writee.find('#network-list')
-        var item, tabNum, svg
+        var item, domItem, tabNum, svg
 
         tabNum = $tabsCont.children().size() + 1
         if (tabNum === 1) writee.tabs() //
 
-        item = 'item-'+ tabNum
+        item = '#item-'+ tabNum
         // For each attribute list create a tab
-        writee.tabs('add', '#'+ item, Object.keys(biomart._state.queryMart.attributes)[tabNum-1])
+        writee.tabs('add', item, Object.keys(biomart._state.queryMart.attributes)[tabNum-1])
         // Playground for the new network
-        this._svg = svg = d3.select($('#'+ item)[0])
+        this._svg = svg = d3.select(domItem = $(item)[0])
                 .append('svg:svg')
-                .attr({ width: w, height: h })
+                // TODO: put this within the css file
+                .attr({ width: "100%", height: "100%",
+                        class: "network-wrapper" })
                 .append('g')
                 .call(d3.behavior.zoom().scaleExtent([0, 20]).on('zoom', function () {
                         svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")") }))
@@ -199,21 +193,39 @@ nt.printHeader = function(header, writee) {
                 .attr("height", h * 8)
 
         this.header = header
+        this._makeTable(domItem)
 }
 
 nt.draw = function (writee) {
-        var config = biomart.networkRendererConfig
+        var config = biomart.enrichmentRendererConfig
 
         this._drawNetwork(config)
 
         this._init()
-        $.publish('network.completed')
+        $.publish('enrichment.completed')
 }
 
 function initPosition (nodes, width, height) {
         nodes.forEach(function (node) {
                 node.x = Math.random() * width
                 node.y = Math.random() * height
+        })
+}
+
+nt._makeTable = function (wrapper) {
+        // $elem.append('<div id="network-report-table" class="network-report-table"></div>')
+        this.table = new Table({
+                wrapper: wrapper,
+                className: "network-report-table",
+                header: this.header.slice(0, -1),
+                numCol: 2,
+                tooltip: function (data) {
+                        var i = 0, d = data[2].split(","), len = d.length, b = ""
+                        for (; i < len; ++i) {
+                                b += d[i]+"<br>"
+                        }
+                        return b
+                }
         })
 }
 
@@ -243,8 +255,10 @@ nt._drawNetwork = function (config) {
 
         config.force.size = [w, h]
 
-        for (var i = 0, nLen = this._rowBuffer.length; i < nLen; ++i)
+        for (var i = 0, nLen = this._rowBuffer.length; i < nLen; ++i) {
                 this._makeNE(this._rowBuffer[i])
+                this.table.addRow(this._rowBuffer[i])
+        }
 
         this._rowBuffer = []
         if (! this._edges.length)
@@ -275,17 +289,17 @@ nt._drawNetwork = function (config) {
         cluster(clusterParams)
 
         // Now we can create the force layout. This actually starts the symulation.
-        force = makeForce(this._nodes, this._edges, config.force)
+        force = makeForce(this._nodes, [], config.force)
 
-        resize(function () {
-                if (self._svg && !self._svg.empty()) {
-                        self._svg.attr({
-                                width: w,
-                                height: h
-                        })
-                        force.size([w, h])
-                }
-        })
+        // resize(function () {
+        //         if (self._svg && !self._svg.empty()) {
+        //                 self._svg.attr({
+        //                         width: w,
+        //                         height: h
+        //                 })
+        //                 force.size([w, h])
+        //         }
+        // })
 
         function loop (thr, iter) {
                 var t
@@ -396,6 +410,6 @@ nt.destroy = function () {
         if (this._svg) {
                 d3.select(this._svg.node().nearestViewportElement).remove()
         }
-        this._max = 0
-        this._nodes = this._edges = this._svg = this._rowBuffer = this._cache = this._adj = null
+        this.table.destroy()
+        this._nodes = this.table = this._edges = this._svg = this._rowBuffer = this._cache = this._adj = null
 }

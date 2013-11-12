@@ -49,3 +49,30 @@ text.network-shadow {
         stroke-width: 2;
         stroke: #999999;
 }
+
+.network-report-table, .network-wrapper {
+        display: inline-block;
+        vertical-align: top;
+}
+
+.network-report-table {
+        width: 15% !important;
+}
+
+.network-wrapper {
+        width: 85%;
+}
+
+.rtb-tooltip {
+        text-align: center;
+        width: 150px;
+        padding: 2px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0px;
+        border-radius: 8px;
+}
+
+.rtb-tooltip-hidden {
+        display: none;
+}

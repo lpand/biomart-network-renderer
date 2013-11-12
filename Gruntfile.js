@@ -3,6 +3,7 @@ module.exports = function(grunt) {
 
         var core = [
                 'src/config.js',
+                'src/table.js',
                 'src/text.js',
                 'src/force.js',
                 'src/graph_chart.js',
@@ -24,7 +25,7 @@ module.exports = function(grunt) {
                                         separator: "\n",
                                 },
                                 files: {
-                                        'dist/biomart_network_renderer.js': basic
+                                        'dist/biomart_enrichment_renderer.js': basic
                                 }
                         },
                         test: {
@@ -32,7 +33,7 @@ module.exports = function(grunt) {
                                         separator: "\n",
                                 },
                                 files: {
-                                        'test/biomart_network_renderer.js': test
+                                        'test/biomart_enrichment_renderer.js': test
                                 }
                         },
                         deps: {
@@ -40,7 +41,7 @@ module.exports = function(grunt) {
                                         separator: "\n",
                                 },
                                 files: {
-                                        'dist/biomart_network_renderer.deps.js': deps
+                                        'dist/biomart_enrichment_renderer.deps.js': deps
                                 }
                         }
                 }
