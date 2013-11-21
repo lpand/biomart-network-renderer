@@ -4,6 +4,9 @@ biomart.networkRendererConfig = {
                 edgeClassName: 'network-edge',
                 radius: function (d) {
                         return 5 + d.radius
+                },
+                "id": function (d) {
+                    return d._id
                 }
         },
 
