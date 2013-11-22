@@ -12,7 +12,8 @@
         "src/renderer.js",
         "src/text.js",
         "src/config.js",
-        "src/network_renderer_test.js",
-        "test/renderer_test.js"
+        "src/network_renderer.js",
+        "test/renderer_test.js",
+        "test/network_renderer_test.js"
     ]
 }

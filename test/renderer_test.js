@@ -5,11 +5,9 @@ describe ('BaseNetworkRenderer', function () {
 
     // console.log("BaseNetworkRenderer.prototype = ", BaseNetworkRenderer.prototype.addProp)
 
-    var res = null
     var ren = null
 
     beforeEach(function () {
-        res = biomart.renderer.results
         ren = new BaseNetworkRenderer()
     })
 

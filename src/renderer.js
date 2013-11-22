@@ -1,5 +1,6 @@
 var concat = Array.prototype.push
 var slice = Array.prototype.slice
+var toString = Object.prototype.toString
 
 function assign(obj) {
     slice.call(arguments, 1).forEach(function(source) {
@@ -17,9 +18,12 @@ function extend (protoProps, staticProps) {
     var child
 
     if (protoProps && protoProps.hasOwnProperty('constructor')) {
-      child = protoProps.constructor
+        child = protoProps.constructor
     } else {
-      child = function(){ return parent.apply(this, arguments) }
+        child = function(){
+            this.super_ = parent.prototype
+            return parent.apply(this, arguments)
+        }
     }
 
     assign(child, parent, staticProps)
@@ -29,8 +33,6 @@ function extend (protoProps, staticProps) {
     child.prototype = new Surrogate()
 
     if (protoProps) assign(child.prototype, protoProps)
-
-    child.super_ = parent.prototype
 
     return child
 }
@@ -52,7 +54,8 @@ BaseNetworkRenderer.prototype = assign({}, biomart.renderer.results.plain, {
      * @param {String} value
      */
     addProp: function (node, key, value) {
-        if (value.indexOf('<a') >= 0) {
+        if (toString.call(value) === "[object String]" &&
+            value.indexOf('<a') >= 0) {
             value = $(value)
             node[key] = value.text()
             node._link = value.attr('href')

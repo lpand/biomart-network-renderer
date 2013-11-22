@@ -95,7 +95,7 @@ function initPosition (nodes, width, height) {
     })
 }
 
-var NetworkRenderer = Renderer.extend({
+var NetworkRenderer = BaseNetworkRenderer.extend({
 
     init: function () {
         this.super_.init.call(this)
@@ -125,15 +125,15 @@ var NetworkRenderer = Renderer.extend({
     },
 
     insertNodes: function (row, header) {
-        var n0 = this.findElem(this.nodes, header[0]),
-            n1 = this.findElem(this.nodes, header[1]), index
+        var n0 = this.findElem(this.nodes, row[0]),
+            n1 = this.findElem(this.nodes, row[1]), index
         if (! n0) {
-            index = this.nodes.push(n0 = this.addProp({}, header[0], row[0]))
+            index = this.nodes.push(n0 = this.addProp({}, header[0], row[0])) - 1
             this.addProp(n0, 'index', index)
             this.addId(n0, row[0])
         }
         if (! n1) {
-            index = this.nodes.push(n1 = this.addProp({}, header[1], row[1]))
+            index = this.nodes.push(n1 = this.addProp({}, header[1], row[1])) - 1
             this.addProp(n1, 'index', index)
             this.addId(n1, row[1])
         }
@@ -149,8 +149,8 @@ var NetworkRenderer = Renderer.extend({
     // nodes.length === 2
     insertEdges: function (nodes, row, header) {
         // ids are strings here
-        var _id = nodes[0] + nodes[1],
-            e = findElem(this.edges, _id),
+        var _id = nodes[0]._id + nodes[1]._id,
+            e = this.findElem(this.edges, _id),
             edge
 
         if (! e) {
