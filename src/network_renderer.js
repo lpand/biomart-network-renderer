@@ -95,7 +95,7 @@ function initPosition (nodes, width, height) {
     })
 }
 
-biomart.renderer.results.network = Renderer.extend({
+var NetworkRenderer = Renderer.extend({
 
     init: function () {
         this.super_.init.call(this)
@@ -126,13 +126,15 @@ biomart.renderer.results.network = Renderer.extend({
 
     insertNodes: function (row, header) {
         var n0 = this.findElem(this.nodes, header[0]),
-            n1 = this.findElem(this.nodes, header[1])
+            n1 = this.findElem(this.nodes, header[1]), index
         if (! n0) {
-            this.nodes.push(n0 = this.addProp({}, header[0], row[0]))
+            index = this.nodes.push(n0 = this.addProp({}, header[0], row[0]))
+            this.addProp(n0, 'index', index)
             this.addId(n0, row[0])
         }
         if (! n1) {
-            this.nodes.push(n1 = this.addProp({}, header[1], row[1]))
+            index = this.nodes.push(n1 = this.addProp({}, header[1], row[1]))
+            this.addProp(n1, 'index', index)
             this.addId(n1, row[1])
         }
 
@@ -246,3 +248,5 @@ biomart.renderer.results.network = Renderer.extend({
         this.clear()
     }
 })
+
+biomart.renderer.results.network = new NetworkRenderer()

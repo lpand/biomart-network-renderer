@@ -4,4 +4,4 @@ set -e
 
 grunt "concat:test"
 testem
-rm "test/biomart_network_renderer.js"
+rm "test/renderer.js"

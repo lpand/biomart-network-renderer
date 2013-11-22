@@ -1,14 +1,18 @@
 {
-        "framework": "mocha+chai",
-        "launch_in_dev": [
-                "Chrome",
-                "Safari"
-        ],
-        "src_files": [
-                "lib/*.js",
-                "test/lib/*.js",
-                "test/mock.js",
-                "test/biomart_network_renderer.js",
-                "test/*_test.js"
-        ]
+    "framework": "mocha+chai",
+    "launch_in_dev": [
+        "Chrome",
+        "Safari",
+        "Firefox"
+    ],
+    "src_files": [
+        "test/lib/*.js",
+        "test/mock.js",
+        "header.js",
+        "src/renderer.js",
+        "src/text.js",
+        "src/config.js",
+        "src/network_renderer_test.js",
+        "test/renderer_test.js"
+    ]
 }
