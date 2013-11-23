@@ -225,7 +225,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
             if (iter < 1000 && struct.force.alpha() > thr) {
                 struct.force.tick()
                 t = setTimeout(function () { loop(thr, ++iter) }, 1)
-                self._addTimer(t)
+                self.addTimer(t)
             } else {
                 endSimulation(struct)
             }
@@ -238,15 +238,29 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
     },
 
     clear: function () {
+        this.super_.clear.call(this)
+        this.clearTimers()
         if (this.group) {
             d3.select(this.group.node().nearestViewportElement).remove()
         }
-        this.super_.clear.call(this)
     },
 
     destroy: function () {
         this.clear()
+    },
+
+    addTimer: function (t) {
+        this.timers || (this.timers = [])
+        this.timers.push(t)
+    },
+
+    clearTimers: function () {
+        this.timers && this.timers.forEach(function (t) {
+                clearTimeout(t)
+        })
+        this.timers = []
     }
+
 })
 
 biomart.renderer.results.network = new NetworkRenderer()
