@@ -121,6 +121,8 @@ describe ('BaseNetworkRenderer', function () {
             assert.equal(svg.size(), 1, "there is only one <svg>")
             assert.equal(svg.attr("id"), conf.idName, "exact id")
             assert.equal(svg.attr("class"), conf.className, "exact class")
+            assert.equal(svg.attr("width"), conf.w)
+            assert.equal(svg.attr("height"), conf.h)
             assert.equal(group.property("tagName").toLowerCase(), "g", "the element returned is a group")
             assert(group.node().nearestViewportElement === svg.node(),
                 "returned element is descendant of the newly create svg")

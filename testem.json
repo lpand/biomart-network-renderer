@@ -13,7 +13,9 @@
         "src/text.js",
         "src/config.js",
         "src/network_renderer.js",
+        "src/cluster.js",
         "test/renderer_test.js",
-        "test/network_renderer_test.js"
+        "test/network_renderer_test.js",
+        "test/cluster_test.js"
     ]
 }

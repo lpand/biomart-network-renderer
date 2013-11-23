@@ -6,7 +6,15 @@ var padding = null
 var maxRadius = null
 
 
-
+/**
+ * Using the BFS visit, find the value of the color property of the first node
+ * reachable that has it.
+ *
+ * @param {BaseNetworkRenderer} renderer - renderer on which do the search.
+ * @param {Object} root - node from which starts the search.
+ * @return {String|null} the value of the color property or null if no node
+ * reachable from root has a color defined.
+ */
 function searchColor(renderer, root) {
     var queue = [root], q, adj, nidx, anode
 
@@ -16,20 +24,14 @@ function searchColor(renderer, root) {
         nidx = renderer.nodes.indexOf(q)
         adj = renderer.getNeighbors(nidx)
         for (var n = 0, len = adj.length; n < len; ++n) if ('color' in (anode = adj[n])) {
-                q.color = anode.color
-                break;
+                return anode.color
             } else if (!('_visited' in anode) && queue.indexOf(anode) < 0) {
                 queue.push(anode)
             }
     }
 
-    // If no color was given, assign random color.
-    // With the current hub selection algorithm, this can happen when there
-    // are strongly connected components with few edges.
-    if (!('color' in root)) {
-        markHub(root)
-        hubNodes.push(root)
-    }
+    // No color found for this node (an hub?)
+    return null;
 }
 
 function colorScale(n) {
@@ -124,7 +126,13 @@ function tick2 (attrs) {
 
     // Give colors to nodes based on clusters
     nodes.forEach(function (node) {
-        searchColor(renderer, node)
+        if ((node.color = searchColor(renderer, node) === null)) {
+            // If no color was given, assign random color.
+            // With the current hub selection algorithm, this can happen when there
+            // are strongly connected components with few edges.
+            markHub(root)
+            hubNodes.push(root)
+        }
     })
 
     return function(evt) {
@@ -138,6 +146,7 @@ function cluster (attrs) {
     attrs.config.force.tick = tick2(attrs)
 }
 
+
 function hubs(edges, nodes) {
     var freq = [], m, hubs = []
     var degs = function (edge) {
@@ -146,9 +155,9 @@ function hubs(edges, nodes) {
     }
 
     edges.forEach(degs)
-    m = d3.quantile(freq.slice(0).sort(), 0.999)
+    m = d3.quantile(freq.slice(0).sort(), 0.98)
     freq.forEach(function (f, i) {
-        if (f > m)
+        if (f >= m)
             hubs.push(nodes[i])
     })
 
