@@ -9,7 +9,7 @@ describe("NetworkRenderer", function () {
         ren = new NetworkRenderer()
     })
 
-    describe ("creation of nodes and edges", function () {
+    describe ("creates nodes and edges", function () {
         var header = ["g0", "g1", "score"],
             rows = [ ["a", "b", "0.4"], ["b", "c", "0.3"] ],
             nodes = [
@@ -19,9 +19,9 @@ describe("NetworkRenderer", function () {
             ],
             edges = [
                 { _id: nodes[0]._id+nodes[1]._id,
-                    source: nodes[0], target: nodes[1], weight: "0.4"},
+                    source: nodes[0], target: nodes[1], value: "0.4"},
                 { _id: nodes[1]._id+nodes[2]._id,
-                    source: nodes[1], target: nodes[2], weight: "0.3"},
+                    source: nodes[1], target: nodes[2], value: "0.3"},
             ]
 
         beforeEach(function () {

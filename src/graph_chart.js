@@ -14,75 +14,75 @@
 // All the attributes are d3 style: value or callback(d, i).
 var Graph = (function (d3) {
 
-        "use strict";
+    "use strict";
 
-        function makeLines(svg, edges, config) {
-                // Update
-                var update = svg.selectAll('line')
-                        .data(edges)
+    function makeLines(svg, edges, config) {
+        // Update
+        var update = svg.selectAll('line')
+            .data(edges)
 
-                var attrs = {}
+        var attrs = {}
 
-                if ('edgeClassName' in config)
-                        attrs['class'] = config.edgeClassName
+        if ('edgeClassName' in config)
+            attrs['class'] = config.edgeClassName
 
-                // Enter
-                var lines = update.enter()
-                        .append('svg:line')
-                        .attr(attrs)
+        // Enter
+        var lines = update.enter()
+            .append('svg:line')
+            .attr(attrs)
 
-                lines.each(function (d) {
-                        var w = 'value' in d ? d.value * 100 : 1
-                        if (w > 7) w = 7
-                        if (w < 1) w = 1
-                        d3.select(this).style('stroke-width', w)
-                })
+        lines.each(function (d) {
+            var w = 'value' in d ? d.value * 100 : 1
+            if (w > 7) w = 7
+            if (w < 1) w = 1
+            d3.select(this).style('stroke-width', w)
+        })
 
-                // Exit
-                update.exit()
-                        .remove()
+        // Exit
+        update.exit()
+            .remove()
 
-                return lines
+        return lines
+    }
+
+    // A group with a circle and a text for each data.
+    function makeBubbles(svg, nodes, config) {
+        var update = svg.selectAll('circle')
+            .data(nodes)
+
+        update.exit()
+            .remove()
+
+        var attrs = { r: config.radius }
+
+        if ('fill' in config)
+            attrs.fill = config.fill
+        if (config.hasOwnProperty('id'))
+            attrs['id'] = config['id']
+        if ('nodeClassName' in config)
+            attrs['class'] = config.nodeClassName
+
+        var bubbles = update.enter()
+            .append('svg:circle')
+            .attr(attrs)
+
+        return bubbles
+    }
+
+    function graph (svg, nodes, edges, config) {
+        var group = svg
+        if ('groupId' in config) {
+            group = d3.select('#'+config.groupId).empty()
+                ? svg.append('svg:g')
+                : d3.select('#'+config.groupId)
+            group.attr('id', config.groupId)
         }
-
-        // A group with a circle and a text for each data.
-        function makeBubbles(svg, nodes, config) {
-                var update = svg.selectAll('circle')
-                        .data(nodes)
-
-                update.exit()
-                        .remove()
-
-                var attrs = { r: config.radius }
-
-                if ('fill' in config)
-                        attrs.fill = config.fill
-                if (config.hasOwnProperty('id'))
-                        attrs['id'] = config['id']
-                if ('nodeClassName' in config)
-                        attrs['class'] = config.nodeClassName
-
-                var bubbles = update.enter()
-                        .append('svg:circle')
-                        .attr(attrs)
-
-                return bubbles
+        return {
+            links: makeLines(group, edges, config),
+            bubbles: makeBubbles(group, nodes, config)
         }
+    }
 
-        function graph (svg, nodes, edges, config) {
-                var group = svg
-                if ('groupId' in config) {
-                        group = d3.select('#'+config.groupId).empty()
-                                ? svg.append('svg:g')
-                                : d3.select('#'+config.groupId)
-                        group.attr('id', config.groupId)
-                }
-                return {
-                        links: makeLines(group, edges, config),
-                        bubbles: makeBubbles(group, nodes, config)
-                }
-        }
-
-        return graph
+    return graph
 
 })(d3);

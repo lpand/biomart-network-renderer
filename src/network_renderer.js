@@ -158,7 +158,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
                 _id: _id,
                 source: nodes[0],
                 target: nodes[1],
-                weight: row[2]
+                value: row[2]
             }
             this.edges.push(edge)
         }
@@ -178,7 +178,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
             h: $(window).height()
         })
 
-        this.drawNetwork(biomart.networkBaseNetworkRendererConfig)
+        this.drawNetwork(biomart.networkRendererConfig)
         // Reset the status for the next draw (tab)
         this.init()
 

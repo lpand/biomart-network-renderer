@@ -1,5 +1,5 @@
 {
-    "framework": "mocha+chai",
+    "framework": "jasmine",
     "launch_in_dev": [
         "Chrome",
         "Safari",
@@ -13,9 +13,11 @@
         "src/text.js",
         "src/config.js",
         "src/network_renderer.js",
+        "src/enrichment_renderer.js",
         "src/cluster.js",
         "test/renderer_test.js",
         "test/network_renderer_test.js",
-        "test/cluster_test.js"
+        "test/cluster_test.js",
+        "test/enrichment_renderer_test.js"
     ]
 }

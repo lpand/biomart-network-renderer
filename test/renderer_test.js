@@ -104,7 +104,7 @@ describe ('BaseNetworkRenderer', function () {
         })
     })
 
-    describe.skip("#newTab", function () {
+    xdescribe("#newTab", function () {
         var $cont = $("div"), $list = $("ul")
     })
 
