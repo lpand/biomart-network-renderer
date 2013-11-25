@@ -1,5 +1,6 @@
 
-var oneTick = function (graph, text) {
+function getTickFn (graph, text) {
+    // 1.. tick with text
     var cb0 = function () {
         graph.bubbles
             .attr('transform', function (d) {
@@ -14,13 +15,12 @@ var oneTick = function (graph, text) {
                 y2: function(d) { return d.target.y }
             })
 
-        if (text) {
-            text.attr('transform', function (d) {
-                return 'translate('+ (d.x + 5) +','+ d.y +')'
-            })
-        }
+        text.attr('transform', function (d) {
+            return 'translate('+ (d.x + 5) +','+ d.y +')'
+        })
     },
 
+    // 1.. tick without text
     cb1 = function () {
         graph.bubbles
             .attr('transform', function (d) {
@@ -61,18 +61,16 @@ var oneTick = function (graph, text) {
         callback = cb0
     }
 
-    oneTick = callback
+    return callback
 }
 
 function showNetwork (struct) {
-    oneTick(struct.graph, struct.text)
     setEventHandlers(struct)
 }
 
 function setEventHandlers(struct) {
-    struct.force.on('tick', function () {
-        oneTick(struct.graph, struct.text)
-    })
+    var fn = getTickFn(struct.graph, struct.text)
+    struct.force.on('tick', function () { fn() })
 
     var drag = struct.force.drag().on('dragstart', function (d) {
         struct.force.stop()
@@ -96,6 +94,8 @@ function initPosition (nodes, width, height) {
 }
 
 var NetworkRenderer = BaseNetworkRenderer.extend({
+
+    config: biomart.networkRendererConfig,
 
     init: function () {
         this.super_.init.call(this)
@@ -137,6 +137,8 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
             this.addProp(n1, 'index', index)
             this.addId(n1, row[1])
         }
+        n0.radius = 'radius' in n0 ? n0.radius + 3 : 3
+        n1.radius = 'radius' in n1 ? n1.radius + 3 : 3
 
         return [n0, n1]
     },
@@ -172,13 +174,16 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
     },
 
     draw: function (writee) {
+        var t = "", attrs = Object.keys(biomart._state.queryMart.attributes)
+        attrs.forEach(function(a) { t += a + " " })
         this.group = this.newSVG({
-            container: this.newTab(writee, $(this.tabSelector))[0],
-            w: $(window).width(),
-            h: $(window).height()
+            container: this.newTab(writee, $(this.tabSelector), t)[0],
+            w: "100%",
+            h: "100%",
+            className: "network-wrapper"
         })
 
-        this.drawNetwork(biomart.networkRendererConfig)
+        this.drawNetwork(this.config)
         // Reset the status for the next draw (tab)
         this.init()
 
@@ -196,10 +201,15 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
         }
     },
 
+    clustering: function (struct) {
+        struct.wk = 0.5
+        cluster(struct)
+    },
+
     drawNetwork: function (config) {
         var w = $(window).width(), h = $(window).height(),
             drawText = 'text' in config, self = this,
-            struct = { config: config }
+            struct = { config: config, renderer: this }
 
         config.force.size = [w, h]
 
@@ -215,9 +225,10 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
         }
 
         // `cluster` defines the right force configuration: e.g. charge, tick
-        cluster(struct)
+        // TODO: NOTE: This is a temporary solution, find a better one!
+        this.clustering(struct)
         // Now we can create the force layout. This actually starts the symulation.
-        struct.makeForce(this.nodes, this.edges, config.force)
+        struct.force = makeForce(this.nodes, this.edges, config.force)
         resize(function () { self.onResize.call(self, struct.force) })
 
         function loop (thr, iter) {
@@ -243,6 +254,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
         if (this.group) {
             d3.select(this.group.node().nearestViewportElement).remove()
         }
+        this.group = null
     },
 
     destroy: function () {

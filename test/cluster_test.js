@@ -21,6 +21,11 @@ describe("cluster methods", function () {
     })
 
     describe("searchColor()", function () {
+        beforeEach(function () {
+            ren.init()
+            ren.nodes = nodes
+            ren.edges = edges
+        })
         it ("returns null if no reachable node has a color", function () {
             assert.isNull(searchColor(ren, nodes[0]), "no color found")
         })

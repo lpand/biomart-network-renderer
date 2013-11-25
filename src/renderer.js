@@ -117,7 +117,7 @@ BaseNetworkRenderer.prototype = assign({}, biomart.renderer.results.plain, {
         // throw new Error("BaseNetworkRenderer#neighbors not implemented")
         // From d3's src/layout/force.js
         var ne = this.neighbors, n, m, j, nodes = this.nodes, links = this.edges
-        if (! ne) {
+        if (!ne.length) {
             n = nodes.length
             m = links.length
             ne = new Array(n)
@@ -167,16 +167,18 @@ BaseNetworkRenderer.prototype = assign({}, biomart.renderer.results.plain, {
      * @param {jQuery} $tabs - it's the tab headers container, usually a list.
      * @return a jQuery object representing the newly create tab.
      */
-    newTab: function($container, $tabs) {
+    newTab: function($container, $tabs, title) {
         var item, tabNum, svg
 
         tabNum = $tabs.children().size() + 1
         if (tabNum === 1)
             $container.tabs()
 
-        itemIdSelector = '#item-'+ tabNum
+        title || (title = Object.keys(biomart._state.queryMart.attributes)[tabNum-1])
+
+        var itemIdSelector = '#item-'+ tabNum
         // For each attribute list create a tab
-        $container.tabs('add', itemIdSelector, Object.keys(biomart._state.queryMart.attributes)[tabNum-1])
+        $container.tabs('add', itemIdSelector, title)
 
         return $(itemIdSelector)
     },
@@ -213,10 +215,10 @@ BaseNetworkRenderer.prototype = assign({}, biomart.renderer.results.plain, {
 
         group.append("rect")
             .attr('class', 'zoom-container')
-            .attr('x', -2.5 * w)
-            .attr('y', -4 * h)
-            .attr("width", w * 5)
-            .attr("height", h * 8)
+            .attr('x', -5e3)
+            .attr('y', -3e3)
+            .attr("width", 1e4)
+            .attr("height", 6e3)
 
         return group
     },

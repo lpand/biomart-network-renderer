@@ -110,4 +110,4 @@ var Table = (function (d3) {
     }
 
     return Table
-}) (d3)
+}) (d3);

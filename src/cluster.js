@@ -4,7 +4,11 @@ var hubFromColor = null
 var hubNodes = null
 var padding = null
 var maxRadius = null
-
+var width = null
+var height = null
+var config = null
+var nodes = null
+var wk = null
 
 /**
  * Using the BFS visit, find the value of the color property of the first node
@@ -30,7 +34,7 @@ function searchColor(renderer, root) {
             }
     }
 
-    // No color found for this node (an hub?)
+    // No color found for this node (a hub?)
     return null;
 }
 
@@ -55,7 +59,7 @@ function clusterHelper(alpha) {
         // For cluster nodes, apply custom gravity.
         if (d === node) {
             node = {x: width / 2, y: height / 2, radius: -d.radius}
-            k = .5 * Math.sqrt(d.radius)
+            k = wk * Math.sqrt(d.radius)
         }
 
         // I need them gt zero or they'll have the same value while deciding the bubble position.
@@ -66,7 +70,7 @@ function clusterHelper(alpha) {
         y = d.y - node.y
         // distance between this node and the hub
         l = Math.sqrt(x * x + y * y)
-        r = node.radius + d.radius //('radius' in node ? node.radius : radius)
+        r = 2 * (node.radius + d.radius) //('radius' in node ? node.radius : radius)
         // if distance !== from sum of the two radius, that is, if they aren't touching
         if (l != r) {
             l = (l - r) / l * alpha * k
@@ -109,11 +113,14 @@ function collide(alpha) {
 }
 
 function tick2 (attrs) {
-    var renderer = attrs.renderer, config = attrs.config,
-        bubbles = attrs.graph.bubbles, links = attrs.graph.links,
-        nodes = bubbles.data(), width = config.force.size[0],
-        height = config.force.size[1]
+    var renderer = attrs.renderer, bubbles = attrs.graph.bubbles,
+        links = attrs.graph.links
 
+    wk = attrs.wk
+    config = attrs.config
+    nodes = bubbles.data()
+    width = config.force.size[0]
+    height = config.force.size[1]
     padding = config.force.cluster.padding
     hubFromColor = {}
     hubNodes = attrs.hubs
@@ -127,12 +134,12 @@ function tick2 (attrs) {
 
     // Give colors to nodes based on clusters
     nodes.forEach(function (node) {
-        if ((node.color = searchColor(renderer, node) === null)) {
+        if ((node.color = searchColor(renderer, node)) === null) {
             // If no color was given, assign random color.
             // With the current hub selection algorithm, this can happen when there
             // are strongly connected components with few edges.
-            markHub(root)
-            hubNodes.push(root)
+            markHub(node)
+            hubNodes.push(node)
         }
     })
 

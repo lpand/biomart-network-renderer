@@ -1,5 +1,7 @@
 var EnrichmentRenderer = NetworkRenderer.extend({
 
+    config: biomart.enrichmentRendererConfig,
+
     makeTable: function (wrapper) {
         // $elem.append('<div id="network-report-table" class="network-report-table"></div>')
         this.table = new Table({
@@ -21,11 +23,12 @@ var EnrichmentRenderer = NetworkRenderer.extend({
         var domItem = this.newTab(writee, $(this.tabSelector))[0]
         this.group = this.newSVG({
             container: domItem,
-            w: $(window).width(),
-            h: $(window).height()
+            w: "100%",
+            h: "100%",
+            className: "network-wrapper"
         })
         this.makeTable(domItem)
-        this.drawNetwork(biomart.enrichmentRendererConfig)
+        this.drawNetwork(this.config)
         // Reset the status for the next draw (tab)
         this.init()
 
@@ -33,7 +36,7 @@ var EnrichmentRenderer = NetworkRenderer.extend({
     },
 
     makeNE: function (rows) {
-        this.super_.makeNE(rows)
+        this.super_.makeNE.call(this, rows)
         for (var i = 0, rLen = rows.length, r; i < rLen && (r = rows[i]); ++i) {
             this.table.addRow(r)
         }
@@ -75,6 +78,18 @@ var EnrichmentRenderer = NetworkRenderer.extend({
             }
         }
         return res
-    }
+    },
 
+    clustering: function (struct) {
+        struct.wk = 7
+        cluster(struct)
+    },
+
+    clear: function () {
+        this.super_.clear.call(this)
+        this.table && this.table.destroy()
+        this.table = null
+    }
 })
+
+biomart.renderer.results.enrichment = new EnrichmentRenderer()

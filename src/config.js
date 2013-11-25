@@ -53,7 +53,7 @@ biomart.enrichmentRendererConfig = {
             return 5 + d.radius
         },
         'id': function (d) {
-            return d._key
+            return d._id
         }
     },
 
