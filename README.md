@@ -7,6 +7,11 @@ biomart-network-renderer
 + CamelCase.
 + No semicolon unless necessary.
 
+#### Install
+Before, you have to install node.js, then, from the repo folter:
++ npm install -g grunt-cli
++ npm install -g testem
++ npm install
 
 #### Tests 
 + [Testem](https://github.com/airportyh/testem) as test runner.
