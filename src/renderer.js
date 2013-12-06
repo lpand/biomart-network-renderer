@@ -14,29 +14,20 @@ function assign(obj) {
 }
 
 function extend (protoProps, staticProps) {
-    var parent = this
-    var child
+    var parentCtor = this
 
-    if (protoProps && protoProps.hasOwnProperty('constructor')) {
-        child = protoProps.constructor
-    } else {
-        child = function(){
-            this.super_ = parent.prototype
-            return parent.apply(this, arguments)
-        }
+    function F() {
+        parentCtor.apply(this, arguments)
+        this.constructor = F
     }
 
-    assign(child, parent, staticProps)
+    F.prototype = Object.create(parentCtor.prototype)
 
-    var Surrogate = function(){ this.constructor = child }
-    Surrogate.prototype = parent.prototype
-    child.prototype = new Surrogate()
+    assign(F.prototype, protoProps)
+    assign(F, staticProps)
 
-    if (protoProps) assign(child.prototype, protoProps)
-
-    return child
+    return F
 }
-
 ////////////////////////////////////////////////////////////////////////////////
 // NOTE!!
 //
@@ -220,7 +211,7 @@ BaseNetworkRenderer.prototype = assign({}, biomart.renderer.results.plain, {
             .attr("width", 1e4)
             .attr("height", 6e3)
 
-        return group
+        return group.append("g")
     },
 
     printHeader: function(header, writee) {

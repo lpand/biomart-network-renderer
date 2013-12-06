@@ -66,6 +66,9 @@ function getTickFn (graph, text) {
 
 function showNetwork (struct) {
     setEventHandlers(struct)
+    var n = struct.renderer.nodes[0], size = struct.force.size(),
+    m = [size[0] / 2, size[1] / 2]
+    struct.renderer.group.attr("transform", "translate("+(m[0] - n.x)+","+(m[1] - n.y)+")")
 }
 
 function setEventHandlers(struct) {
@@ -98,7 +101,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
     config: biomart.networkRendererConfig,
 
     init: function () {
-        this.super_.init.call(this)
+        BaseNetworkRenderer.prototype.init.call(this)
         this.tabSelector = '#network-list'
         this.group = null
     },
@@ -109,7 +112,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
             return $(this.tabSelector)
 
         // Create the container
-        var $elem = this.super_.getElement.call(this)
+        var $elem = BaseNetworkRenderer.prototype.getElement.call(this)
         // This is the actual tab list
         $elem.append('<ul id="network-list" class="network-tabs"></ul>')
         return $elem
@@ -170,7 +173,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
 
     printHeader: function (header, writee) {
         this.init()
-        this.super_.printHeader.call(this, header, writee)
+        BaseNetworkRenderer.prototype.printHeader.call(this, header, writee)
     },
 
     draw: function (writee) {
@@ -185,7 +188,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
 
         this.drawNetwork(this.config)
         // Reset the status for the next draw (tab)
-        this.init()
+        // this.init()
 
         $.publish('network.completed')
     },
@@ -249,7 +252,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
     },
 
     clear: function () {
-        this.super_.clear.call(this)
+        BaseNetworkRenderer.prototype.clear.call(this)
         this.clearTimers()
         if (this.group) {
             d3.select(this.group.node().nearestViewportElement).remove()
@@ -274,5 +277,7 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
     }
 
 })
+
+NetworkRenderer.extend = extend
 
 biomart.renderer.results.network = new NetworkRenderer()

@@ -30,13 +30,13 @@ var EnrichmentRenderer = NetworkRenderer.extend({
         this.makeTable(domItem)
         this.drawNetwork(this.config)
         // Reset the status for the next draw (tab)
-        this.init()
+        // this.init()
 
         $.publish('network.completed')
     },
 
     makeNE: function (rows) {
-        this.super_.makeNE.call(this, rows)
+        NetworkRenderer.prototype.makeNE.call(this, rows)
         for (var i = 0, rLen = rows.length, r; i < rLen && (r = rows[i]); ++i) {
             this.table.addRow(r)
         }
@@ -86,7 +86,7 @@ var EnrichmentRenderer = NetworkRenderer.extend({
     },
 
     clear: function () {
-        this.super_.clear.call(this)
+        NetworkRenderer.prototype.clear.call(this)
         this.table && this.table.destroy()
         this.table = null
     }
