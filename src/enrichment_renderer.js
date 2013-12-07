@@ -50,7 +50,10 @@ var EnrichmentRenderer = NetworkRenderer.extend({
             index = this.nodes.push(ann = this.addProp({}, header[0], row[0])) - 1
             this.addId(ann, row[0])
             ann.index = index
-            ann.radius = row[1] * 50
+            // Nodes are sorted by score
+            ann.radius = row[1] / (1 - this.nodes.length
+                ? this.nodes[0][header[1]]
+                : row[1]) * 15 + 15
         }
         res.push(ann)
         for (var i = 0, len = gs.length; i < len; ++i) {
