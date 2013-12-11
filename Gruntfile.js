@@ -10,6 +10,7 @@ module.exports = function(grunt) {
         'src/cluster.js',
         'src/resize.js',
         "src/table.js",
+        "src/foci_draw.js",
         "src/renderer.js",
         'src/network_renderer.js',
         "src/enrichment_renderer.js"

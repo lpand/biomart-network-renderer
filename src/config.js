@@ -4,7 +4,7 @@ biomart.networkRendererConfig = {
         nodeClassName: 'network-bubble',
         edgeClassName: 'network-edge',
         radius: function (d) {
-            return 5 + d.radius
+            return 20//5 + d.radius
         },
         "id": function (d) {
             return d._id
@@ -47,7 +47,9 @@ biomart.networkRendererConfig.force.charge = function (d) {
 // ENRICHMENT
 biomart.enrichmentRendererConfig = {
     graph: {
-        nodeClassName: 'network-bubble',
+        nodeClassName: function (d) {
+            return "isHub" in d ? "annotation-bubble" : "network-bubble"
+        },
         edgeClassName: 'network-edge',
         radius: function (d) {
             return 5 + d.radius
@@ -73,6 +75,9 @@ biomart.enrichmentRendererConfig = {
         callback: textCallback,
         link: function (d) {
                 return d._link
+        },
+        text: function (d) {
+            return d._id
         }
     }
 }

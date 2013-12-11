@@ -186,7 +186,10 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
             className: "network-wrapper"
         })
 
-        this.drawNetwork(this.config)
+        this.makeNE(this.rowBuffer)
+        this.rowBuffer = []
+        this.canvas = nwtDraw.call(this).draw()
+        // this.drawNetwork(this.config)
         // Reset the status for the next draw (tab)
         // this.init()
 

@@ -2,15 +2,20 @@ var EnrichmentRenderer = NetworkRenderer.extend({
 
     config: biomart.enrichmentRendererConfig,
 
+    init: function () {
+        NetworkRenderer.prototype.init.call(this)
+        this.annCount = -1
+    },
+
     makeTable: function (wrapper) {
         // $elem.append('<div id="network-report-table" class="network-report-table"></div>')
         this.table = new Table({
             wrapper: wrapper,
             className: "network-report-table",
             header: this.header.slice(0, -1),
-            numCol: 2,
+            numCol: 3,
             tooltip: function (data) {
-                var i = 0, d = data[2].split(","), len = d.length, b = ""
+                var i = 0, d = data[3].split(","), len = d.length, b = ""
                 for (; i < len; ++i) {
                     b += d[i]+"<br>"
                 }
@@ -28,10 +33,11 @@ var EnrichmentRenderer = NetworkRenderer.extend({
             className: "network-wrapper"
         })
         this.makeTable(domItem)
-        this.drawNetwork(this.config)
-        // Reset the status for the next draw (tab)
-        // this.init()
 
+        this.makeNE(this.rowBuffer)
+        this.rowBuffer = []
+
+        fociDraw.call(this)
         $.publish('network.completed')
     },
 
@@ -43,23 +49,31 @@ var EnrichmentRenderer = NetworkRenderer.extend({
     },
 
     insertNodes: function (row, header) {
+        var ann, gs, res, index, g, gid, annIdx = 0, genesIdx = 3,
+            // p-value index, bonferroni p-value
+            pvIdx = 1, bpvIdx = 2
+
+        if (++this.annCount >= 5) return []
         //row: [annotation, score, gene list]
-        var ann = this.findElem(this.nodes, row[0]),
-            gs = row[2].split(","), res = [], index, g, gid
+        ann = this.findElem(this.nodes, row[annIdx])
+        gs = row[genesIdx].split(",")
+        res = []
+
         if (! ann) {
-            index = this.nodes.push(ann = this.addProp({}, header[0], row[0])) - 1
-            this.addId(ann, row[0])
+            index = this.nodes.push(ann = this.addProp({}, header[annIdx], row[annIdx])) - 1
+            this.addProp(ann, header[pvIdx], row[pvIdx])
+            // this.addProp(ann, header[bpvIdx], row[bpvIdx])
+            this.addId(ann, row[annIdx])
             ann.index = index
+            ann.isHub = true
             // Nodes are sorted by score
-            ann.radius = row[1] / (1 - this.nodes.length
-                ? this.nodes[0][header[1]]
-                : row[1]) * 15 + 15
+            // ann.radius = (row[1] / this.nodes[0][header[1]]) / 700  + 15
         }
         res.push(ann)
         for (var i = 0, len = gs.length; i < len; ++i) {
             g = this.findElem(this.nodes, gid = gs[i])
             if (! g) {
-                index = this.nodes.push(g = this.addProp({}, header[2], gid)) - 1
+                index = this.nodes.push(g = this.addProp({}, header[genesIdx], gid)) - 1
                 this.addId(g, gid)
                 g.index = index
                 g.radius = 8
@@ -72,6 +86,7 @@ var EnrichmentRenderer = NetworkRenderer.extend({
     insertEdges: function (nodes, row, header) {
         //nodes: [ann, g0, g1, ...]
         //row/header: [annotation, score, gene list]
+        if (!nodes.length) return []
         var ann = nodes[0], annId = ann._id, eid, g, e, res = []
         for (var i = 1, len = nodes.length; i < len; ++i) {
             e = this.findElem(this.edges, eid = annId + (g = nodes[i])._id)
