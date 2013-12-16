@@ -1,5 +1,5 @@
 svg, g {
-    background-color: #333;
+    background-color: #fff;
 }
 
 /* Remove rules applied by .biomart .data li */
@@ -36,14 +36,19 @@ text.network-shadow {
 }
 
 .network-edge {
-    stroke: #ff9000;
+    stroke: #C8B50B;
     /*stroke-width: 1px;*/
+ }
+
+ .enrichment-edge {
+    stroke: #333;
+    stroke-width: 1px;
  }
 
 .network-bubble {
     stroke-width: 3;
     stroke: #fff;
-    fill: #C503BE;
+    fill: #69054B;
     cursor: move;
 }
 
@@ -61,11 +66,13 @@ text.network-shadow {
 }
 
 .network-report-table {
-    width: 15% !important;
+    border-left: 1px dashed #333;
+    padding-left: 15px;
+    width: 23% !important;
 }
 
 .network-wrapper {
-    width: 85%;
+    width: 75%;
 }
 
 .rtb-tooltip {
