@@ -11,11 +11,11 @@ var EnrichmentRenderer = NetworkRenderer.extend({
         // $elem.append('<div id="network-report-table" class="network-report-table"></div>')
         this.table = new Table({
             wrapper: wrapper,
-            className: "network-report-table",
-            header: this.header.slice(0, -1),
-            numCol: 3,
+            className: "",
+            header: this.header.slice(0, -2).concat([this.header[4]]),
+            numCol: 4,
             tooltip: function (data) {
-                var i = 0, d = data[3].split(","), len = d.length, b = ""
+                var i = 0, d = data[4].split(","), len = d.length, b = ""
                 for (; i < len; ++i) {
                     b += d[i]+"<br>"
                 }
@@ -26,13 +26,15 @@ var EnrichmentRenderer = NetworkRenderer.extend({
 
     draw: function (writee) {
         var domItem = this.newTab(writee, $(this.tabSelector))[0]
+
         this.group = this.newSVG({
             container: domItem,
             w: "100%",
             h: "100%",
             className: "network-wrapper"
         })
-        this.makeTable(domItem)
+
+        this.makeTable($('<div class="network-report-table">').appendTo($(domItem))[0])
 
         this.makeNE(this.rowBuffer)
         this.rowBuffer = []
@@ -41,17 +43,21 @@ var EnrichmentRenderer = NetworkRenderer.extend({
         $.publish('network.completed')
     },
 
-    makeNE: function (rows) {
-        NetworkRenderer.prototype.makeNE.call(this, rows)
-        for (var i = 0, rLen = rows.length, r; i < rLen && (r = rows[i]); ++i) {
-            this.table.addRow(r)
-        }
+    // makeNE: function (rows) {
+    //     NetworkRenderer.prototype.makeNE.call(this, rows)
+    //     for (var i = 0, rLen = rows.length, r; i < rLen && (r = rows[i]); ++i) {
+    //         this.table.addRow(this.makeRow(r))
+    //     }
+    // },
+
+    makeRow: function (row) {
+        return row.slice(0, -2).concat([row[4], row[3]])
     },
 
     insertNodes: function (row, header) {
         var ann, gs, res, index, g, gid, annIdx = 0, genesIdx = 3,
             // p-value index, bonferroni p-value
-            pvIdx = 1, bpvIdx = 2
+            pvIdx = 1, bpvIdx = 2, descIdx = 4
 
         if (++this.annCount >= 5) return []
         //row: [annotation, score, gene list]
@@ -62,6 +68,7 @@ var EnrichmentRenderer = NetworkRenderer.extend({
         if (! ann) {
             index = this.nodes.push(ann = this.addProp({}, header[annIdx], row[annIdx])) - 1
             this.addProp(ann, header[pvIdx], row[pvIdx])
+            this.addProp(ann, "description", row[descIdx])
             // this.addProp(ann, header[bpvIdx], row[bpvIdx])
             this.addId(ann, row[annIdx])
             ann.index = index
@@ -105,8 +112,8 @@ var EnrichmentRenderer = NetworkRenderer.extend({
 
     clear: function () {
         NetworkRenderer.prototype.clear.call(this)
-        this.table && this.table.destroy()
-        this.table = null
+        // this.table && this.table.destroy()
+        // this.table = null
     }
 })
 

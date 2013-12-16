@@ -140,14 +140,25 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
             this.addProp(n1, 'index', index)
             this.addId(n1, row[1])
         }
-        n0.radius = 'radius' in n0 ? n0.radius + 3 : 3
-        n1.radius = 'radius' in n1 ? n1.radius + 3 : 3
+        // n0.radius = 'radius' in n0 ? n0.radius + 3 : 3
+        // n1.radius = 'radius' in n1 ? n1.radius + 3 : 3
 
         return [n0, n1]
     },
 
     addId: function (o, idValue) {
         this.addProp(o, '_id', idValue)
+    },
+
+    makeTable: function (wrapper) {
+        // $elem.append('<div id="network-report-table" class="network-report-table"></div>')
+        this.table = new Table({
+            wrapper: wrapper,
+            className: "",
+            header: this.header.slice(0, -1),
+            numCol: 3,
+            tooltip: null
+        })
     },
 
     // I'm assuming there could not be duplicated edges and
@@ -176,15 +187,30 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
         BaseNetworkRenderer.prototype.printHeader.call(this, header, writee)
     },
 
+    makeNE: function (rows) {
+        BaseNetworkRenderer.prototype.makeNE.call(this, rows)
+        for (var i = 0, rLen = rows.length, r; i < rLen && (r = rows[i]); ++i) {
+            this.table.addRow(this.makeRow(r))
+        }
+    },
+
+    makeRow: function (row) {
+        return row
+    },
+
     draw: function (writee) {
         var t = "", attrs = Object.keys(biomart._state.queryMart.attributes)
         attrs.forEach(function(a) { t += a + " " })
+        var domItem = this.newTab(writee, $(this.tabSelector), t)[0]
+
         this.group = this.newSVG({
-            container: this.newTab(writee, $(this.tabSelector), t)[0],
+            container: domItem,
             w: "100%",
             h: "100%",
             className: "network-wrapper"
         })
+
+        this.makeTable($('<div class="network-report-table">').appendTo($(domItem))[0])
 
         this.makeNE(this.rowBuffer)
         this.rowBuffer = []
@@ -261,6 +287,8 @@ var NetworkRenderer = BaseNetworkRenderer.extend({
             d3.select(this.group.node().nearestViewportElement).remove()
         }
         this.group = null
+        this.table && this.table.destroy()
+        this.table = null
     },
 
     destroy: function () {

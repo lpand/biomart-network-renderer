@@ -34,6 +34,9 @@ biomart.networkRendererConfig = {
         callback: textCallback,
         link: function (d) {
             return d._link
+        },
+        text: function (d) {
+            return d._id
         }
     }
 }
@@ -50,7 +53,7 @@ biomart.enrichmentRendererConfig = {
         nodeClassName: function (d) {
             return "isHub" in d ? "annotation-bubble" : "network-bubble"
         },
-        edgeClassName: 'network-edge',
+        edgeClassName: 'enrichment-edge',
         radius: function (d) {
             return 5 + d.radius
         },
@@ -77,7 +80,7 @@ biomart.enrichmentRendererConfig = {
                 return d._link
         },
         text: function (d) {
-            return d._id
+            return 'description' in d ? d.description : d._id
         }
     }
 }
