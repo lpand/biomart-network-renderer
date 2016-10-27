@@ -15,6 +15,6 @@ Before, you have to install node.js, then, from the repo folter:
 
 #### Tests 
 + [Testem](https://github.com/airportyh/testem) as test runner.
-+ [Jasmine](http://pivotal.github.io/jasmine/) as bbd test framework.
++ [Jasmine](http://jasmine.github.io/) as bbd test framework.
 + [Chai](http://chaijs.com/) for assertions.
 + [Sinon](http://sinonjs.org/) for spying!
